@@ -4,6 +4,9 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   
+  // External packages for server components
+  serverExternalPackages: ['sharp'],
+  
   // Security headers
   async headers() {
     return [
@@ -25,11 +28,6 @@ const nextConfig = {
         ],
       },
     ];
-  },
-  
-  // API route timeout for AI processing
-  experimental: {
-    serverComponentsExternalPackages: ['sharp'],
   },
 };
 
