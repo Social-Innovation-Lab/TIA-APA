@@ -140,6 +140,28 @@ export default function TiaApa() {
     return 'bn'; // Default to Bangla
   }, []);
 
+  // Update detected language when query changes
+  useEffect(() => {
+    if (query.trim().length > 2) {
+      const lang = detectLanguage(query);
+      setDetectedLanguage(lang);
+    }
+  }, [query, detectLanguage]);
+
+  // Debounced suggestions - faster response
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (query.trim().length > 2 && !isRecording) {
+        fetchSuggestions(query);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        setLoadingSuggestions(false);
+      }
+    }, 200);
+    return () => clearTimeout(timeoutId);
+  }, [query, isRecording, fetchSuggestions]);
+
   // Fetch query suggestions with language-specific filtering - optimized for speed
   const fetchSuggestions = useCallback(async (input) => {
     try {
@@ -183,29 +205,7 @@ export default function TiaApa() {
     } finally {
       setLoadingSuggestions(false);
     }
-  }, [detectedLanguage]);
-
-  // Update detected language when query changes
-  useEffect(() => {
-    if (query.trim().length > 2) {
-      const lang = detectLanguage(query);
-      setDetectedLanguage(lang);
-    }
-  }, [query, detectLanguage]);
-
-  // Debounced suggestions - faster response
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (query.trim().length > 2 && !isRecording) {
-        fetchSuggestions(query);
-      } else {
-        setSuggestions([]);
-        setShowSuggestions(false);
-        setLoadingSuggestions(false);
-      }
-    }, 200);
-    return () => clearTimeout(timeoutId);
-  }, [query, isRecording, fetchSuggestions]);
+  }, [detectedLanguage, detectLanguage]);
 
   // Handle suggestion click
   const handleSuggestionClick = (suggestion) => {
