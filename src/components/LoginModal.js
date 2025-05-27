@@ -22,6 +22,8 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
     setError('');
 
     try {
+      console.log('Attempting login with data:', formData);
+      
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -30,7 +32,15 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
         body: JSON.stringify(formData),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (data.success) {
         // Store session data in localStorage
@@ -49,8 +59,17 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
         setError(data.error || 'লগইনে সমস্যা হয়েছে');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError('নেটওয়ার্ক সমস্যা। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      console.error('Login error details:', error);
+      
+      if (error.message.includes('404')) {
+        setError('API রুট পাওয়া যায়নি। সার্ভার সমস্যা।');
+      } else if (error.message.includes('500')) {
+        setError('সার্ভার ত্রুটি। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setError('নেটওয়ার্ক সংযোগ সমস্যা। ইন্টারনেট সংযোগ পরীক্ষা করুন।');
+      } else {
+        setError(`নেটওয়ার্ক সমস্যা: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }
