@@ -1,0 +1,159 @@
+'use client';
+
+import { useState } from 'react';
+
+export default function LoginModal({ isOpen, onClose, onLogin }) {
+  const [formData, setFormData] = useState({
+    email: '',
+    location: '',
+    clinicName: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setError(''); // Clear error when user types
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Store session data in localStorage
+        localStorage.setItem('tiaApaSession', JSON.stringify({
+          sessionToken: data.sessionToken,
+          userData: data.userData,
+          loginTime: new Date().toISOString()
+        }));
+        
+        onLogin(data.userData);
+        onClose();
+        
+        // Reset form
+        setFormData({ email: '', location: '', clinicName: '' });
+      } else {
+        setError(data.error || 'লগইনে সমস্যা হয়েছে');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('নেটওয়ার্ক সমস্যা। অনুগ্রহ করে আবার চেষ্টা করুন।');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          {/* Header */}
+          <div className="text-center mb-4">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">
+              টিয়া আপাকে প্রশ্ন করতে আপনার তথ্য দিয়ে লগইন করুন
+            </h2>
+            <p className="text-sm text-gray-600">
+              প্রশ্ন করার জন্য নিচের তথ্যগুলো পূরণ করুন
+            </p>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email/ইমেইল *
+              </label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="Type in English"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-black"
+              />
+            </div>
+
+            {/* Location Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Location/লোকেশন *
+              </label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => handleInputChange('location', e.target.value)}
+                placeholder="Type in English"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-black"
+              />
+            </div>
+
+            {/* Clinic Name Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Name of the Adaptation Clinic/অ্যাডাপ্টেশন ক্লিনিকের নাম *
+              </label>
+              <input
+                type="text"
+                value={formData.clinicName}
+                onChange={(e) => handleInputChange('clinicName', e.target.value)}
+                placeholder="Type in English"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-black"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+                disabled={loading}
+              >
+                বাতিল
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'লগইন হচ্ছে...' : 'লগইন করুন'}
+              </button>
+            </div>
+          </form>
+
+          {/* Note */}
+          <div className="mt-4 p-3 bg-blue-50 rounded-md">
+            <p className="text-xs text-blue-700">
+              <strong>নোট:</strong> আপনার তথ্য নিরাপদে সংরক্ষিত হবে এবং শুধুমাত্র কৃষি পরামর্শ প্রদানের জন্য ব্যবহৃত হবে।
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+} 
