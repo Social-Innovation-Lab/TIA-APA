@@ -729,7 +729,125 @@ export default function TiaApa() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 sm:p-3 z-10 flex-shrink-0 pb-safe">
         <div className="max-w-4xl mx-auto w-full">
           <form onSubmit={handleSubmit} className="relative w-full">
-            <div className="flex items-center bg-gray-50 rounded-full border border-gray-200 p-1 sm:p-2 gap-1 sm:gap-2 w-full overflow-hidden">
+            {/* Mobile: 2-tier layout, Desktop: single row */}
+            <div className="block sm:hidden">
+              {/* Mobile Top Row: Text Input + Send Button */}
+              <div className="flex items-center bg-gray-50 rounded-full border border-gray-200 p-1 gap-2 mb-2">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                  }}
+                  disabled={!isLoggedIn}
+                  placeholder={
+                    !isLoggedIn
+                      ? "লগইন করুন প্রশ্ন করার জন্য"
+                      : listening
+                      ? (detectedLanguage === 'bn' ? "🎤 শুনছি..." : "🎤 Listening...")
+                      : isRecording && !listening
+                      ? (detectedLanguage === 'bn' ? "🎤 প্রসেসিং..." : "🎤 Processing...")
+                      : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
+                  }
+                  className={`flex-1 min-w-0 px-4 py-3 bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 text-base ${
+                    listening || isRecording ? 'placeholder-red-500' : ''
+                  } ${!isLoggedIn ? 'cursor-not-allowed' : ''}`}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e); }}
+                  onFocus={() => setShowSuggestions(suggestions.length > 0)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  ref={inputRef}
+                />
+                
+                {/* Send Button */}
+                <button
+                  type="submit"
+                  disabled={isLoading || !query.trim() || !isLoggedIn}
+                  className="flex-shrink-0 w-10 h-10 rounded-full bg-pink-500 text-white hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                >
+                  <span className="text-base">➤</span>
+                </button>
+              </div>
+              
+              {/* Mobile Bottom Row: Other Buttons */}
+              <div className="flex items-center justify-center gap-3">
+                {/* Voice Button */}
+                <button
+                  type="button"
+                  onClick={handleVoiceInput}
+                  disabled={!isLoggedIn}
+                  className={`flex-shrink-0 w-10 h-10 rounded-full transition-colors flex items-center justify-center ${
+                    listening || isRecording
+                      ? 'bg-red-500 text-white animate-pulse' 
+                      : 'bg-pink-500 text-white hover:bg-pink-600'
+                  } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  title={
+                    listening || isRecording
+                      ? (detectedLanguage === 'bn' ? 'রেকর্ডিং বন্ধ করুন' : 'Stop Recording')
+                      : (detectedLanguage === 'bn' ? 'ভয়েস রেকর্ডিং শুরু করুন' : 'Start Voice Recording')
+                  }
+                >
+                  <span className="text-base">🎤</span>
+                </button>
+                
+                {/* Language Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newLang = detectedLanguage === 'bn' ? 'en' : 'bn';
+                    setDetectedLanguage(newLang);
+                    
+                    // If currently listening, restart with new language
+                    if (listening) {
+                      SpeechRecognition.stopListening();
+                      setTimeout(() => {
+                        const language = newLang === 'bn' ? 'bn-BD' : 'en-US';
+                        SpeechRecognition.startListening({ 
+                          continuous: true, 
+                          language: language,
+                          interimResults: true 
+                        });
+                      }, 100);
+                    }
+                  }}
+                  disabled={!isLoggedIn}
+                  className={`flex-shrink-0 w-10 h-10 rounded-full transition-colors flex items-center justify-center text-xs font-bold ${
+                    detectedLanguage === 'bn' 
+                      ? 'bg-green-500 text-white hover:bg-green-600' 
+                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                  } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  title={detectedLanguage === 'bn' ? 'Switch to English' : 'Switch to Bengali'}
+                >
+                  <span className="text-sm leading-none">{detectedLanguage === 'bn' ? 'বাং' : 'EN'}</span>
+                </button>
+                
+                {/* Image Upload Button */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={!isLoggedIn}
+                  className={`flex-shrink-0 w-10 h-10 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition-colors flex items-center justify-center ${
+                    !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <span className="text-base">📷</span>
+                </button>
+                
+                {/* Refresh Button */}
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  disabled={!isLoggedIn}
+                  className={`flex-shrink-0 w-10 h-10 rounded-full bg-gray-400 text-white hover:bg-gray-500 transition-colors flex items-center justify-center ${
+                    !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <span className="text-base">🔄</span>
+                </button>
+              </div>
+            </div>
+            
+            {/* Desktop: Single Row Layout */}
+            <div className="hidden sm:flex items-center bg-gray-50 rounded-full border border-gray-200 p-1 sm:p-2 gap-1 sm:gap-2 w-full overflow-hidden">
               {/* Voice Button */}
               <button
                 type="button"
