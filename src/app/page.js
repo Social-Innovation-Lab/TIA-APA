@@ -863,7 +863,7 @@ export default function TiaApa() {
                     onClick={handleImageQuery}
                     disabled={isLoading}
                 className="mt-2 w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 disabled:opacity-50 text-sm"
-              >
+                  >
                 {detectedLanguage === 'bn' ? 'ছবি বিশ্লেষণ করুন' : 'Analyze Image'}
               </button>
             </div>
