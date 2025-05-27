@@ -726,19 +726,19 @@ export default function TiaApa() {
       </main>
 
       {/* Fixed Bottom Input Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 sm:p-3 z-10 flex-shrink-0">
-        <div className="max-w-4xl mx-auto">
-              <form onSubmit={handleSubmit} className="relative">
-            <div className="flex items-center bg-gray-50 rounded-full border border-gray-200 p-1.5 sm:p-2">
-                  {/* Voice Button */}
-                  <button
-                    type="button"
-                    onClick={handleVoiceInput}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 sm:p-3 z-10 flex-shrink-0 pb-safe">
+        <div className="max-w-4xl mx-auto w-full">
+          <form onSubmit={handleSubmit} className="relative w-full">
+            <div className="flex items-center bg-gray-50 rounded-full border border-gray-200 p-1 sm:p-2 gap-1 sm:gap-2 w-full overflow-hidden">
+              {/* Voice Button */}
+              <button
+                type="button"
+                onClick={handleVoiceInput}
                 disabled={!isLoggedIn}
-                className={`p-2 sm:p-2.5 rounded-full transition-colors ${
+                className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-colors flex items-center justify-center ${
                   listening || isRecording
-                        ? 'bg-red-500 text-white animate-pulse' 
-                        : 'bg-pink-500 text-white hover:bg-pink-600'
+                    ? 'bg-red-500 text-white animate-pulse' 
+                    : 'bg-pink-500 text-white hover:bg-pink-600'
                 } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                 title={
                   listening || isRecording
@@ -746,7 +746,7 @@ export default function TiaApa() {
                     : (detectedLanguage === 'bn' ? 'ভয়েস রেকর্ডিং শুরু করুন' : 'Start Voice Recording')
                 }
               >
-                <span className="text-sm sm:text-base">🎤</span>
+                <span className="text-xs sm:text-base">🎤</span>
               </button>
               
               {/* Language Toggle Button */}
@@ -770,20 +770,20 @@ export default function TiaApa() {
                   }
                 }}
                 disabled={!isLoggedIn}
-                className={`p-2 sm:p-2.5 rounded-full transition-colors text-xs font-bold ${
+                className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-colors flex items-center justify-center text-xs font-bold ${
                   detectedLanguage === 'bn' 
                     ? 'bg-green-500 text-white hover:bg-green-600' 
                     : 'bg-blue-500 text-white hover:bg-blue-600'
                 } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                 title={detectedLanguage === 'bn' ? 'Switch to English' : 'Switch to Bengali'}
               >
-                {detectedLanguage === 'bn' ? 'বাং' : 'EN'}
-                  </button>
+                <span className="text-xs sm:text-sm leading-none">{detectedLanguage === 'bn' ? 'বাং' : 'EN'}</span>
+              </button>
                   
-                  {/* Text Input */}
-                  <input
-                    type="text"
-                    value={query}
+              {/* Text Input */}
+              <input
+                type="text"
+                value={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
                 }}
@@ -797,61 +797,61 @@ export default function TiaApa() {
                     ? (detectedLanguage === 'bn' ? "🎤 প্রসেসিং..." : "🎤 Processing...")
                     : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
                 }
-                className={`flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 text-sm sm:text-base ${
+                className={`flex-1 min-w-0 px-2 sm:px-4 py-2 sm:py-2.5 bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 text-xs sm:text-base ${
                   listening || isRecording ? 'placeholder-red-500' : ''
                 } ${!isLoggedIn ? 'cursor-not-allowed' : ''}`}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e); }}
                 onFocus={() => setShowSuggestions(suggestions.length > 0)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 ref={inputRef}
-                  />
+              />
                   
-                  {/* Image Upload Button */}
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
+              {/* Image Upload Button */}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
                 disabled={!isLoggedIn}
-                className={`p-2 sm:p-2.5 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition-colors ${
+                className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition-colors flex items-center justify-center ${
                   !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
-                  >
-                <span className="text-sm sm:text-base">📷</span>
-                  </button>
+              >
+                <span className="text-xs sm:text-base">📷</span>
+              </button>
                   
-                  {/* Refresh Button */}
-                  <button
-                    type="button"
-                    onClick={clearAll}
+              {/* Refresh Button */}
+              <button
+                type="button"
+                onClick={clearAll}
                 disabled={!isLoggedIn}
-                className={`p-2 sm:p-2.5 rounded-full bg-gray-400 text-white hover:bg-gray-500 transition-colors ${
+                className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-400 text-white hover:bg-gray-500 transition-colors flex items-center justify-center ${
                   !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
-                  >
-                <span className="text-sm sm:text-base">🔄</span>
-                  </button>
+              >
+                <span className="text-xs sm:text-base">🔄</span>
+              </button>
                   
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
+              {/* Submit Button */}
+              <button
+                type="submit"
                 disabled={isLoading || !query.trim() || !isLoggedIn}
-                className="p-2 sm:p-2.5 rounded-full bg-pink-500 text-white hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                <span className="text-sm sm:text-base">➤</span>
-                  </button>
-                </div>
-                
-                {/* Hidden file input */}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  className="hidden"
-                />
-              </form>
-              
-              {/* Uploaded Image Preview */}
-              {uploadedImage && (
+                className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pink-500 text-white hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+              >
+                <span className="text-xs sm:text-base">➤</span>
+              </button>
+            </div>
+            
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="hidden"
+            />
+          </form>
+          
+          {/* Uploaded Image Preview */}
+          {uploadedImage && (
             <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-pink-50 rounded-lg border border-pink-200">
               <Image 
                 src={uploadedImage} 
@@ -860,20 +860,20 @@ export default function TiaApa() {
                 className="max-w-full max-h-24 sm:max-h-32 mx-auto rounded-lg mb-2 border border-gray-200" 
                 unoptimized={true}
               />
-                  <input
-                    type="text"
-                    value={imageQuery}
-                    onChange={(e) => setImageQuery(e.target.value)}
+              <input
+                type="text"
+                value={imageQuery}
+                onChange={(e) => setImageQuery(e.target.value)}
                 placeholder={detectedLanguage === 'bn' ? "ছবি সম্পর্কে আপনার প্রশ্ন লিখুন..." : "Write your question about the image..."}
                 className="w-full p-2 border border-pink-300 rounded-lg text-black text-sm"
-                  />
-                  <button
-                    onClick={handleImageQuery}
-                    disabled={isLoading}
+              />
+              <button
+                onClick={handleImageQuery}
+                disabled={isLoading}
                 className="mt-2 w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 disabled:opacity-50 text-sm"
-                  >
+              >
                 {detectedLanguage === 'bn' ? 'ছবি বিশ্লেষণ করুন' : 'Analyze Image'}
-                  </button>
+              </button>
             </div>
           )}
 
@@ -899,7 +899,7 @@ export default function TiaApa() {
             </div>
           )}
         </div>
-        </div>
+      </div>
     </div>
   );
 }
