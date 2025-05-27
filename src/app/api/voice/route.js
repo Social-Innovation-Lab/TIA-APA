@@ -16,6 +16,43 @@ export async function POST(request) {
     }
 
     console.log('Processing audio with requested language:', language);
+    console.log('Audio file type:', audioFile.type);
+    console.log('Audio file size:', audioFile.size);
+
+    // Create a proper File object with correct extension for Whisper API
+    let processedAudioFile;
+    
+    // Determine the correct file extension based on MIME type
+    let extension = '.webm'; // default
+    if (audioFile.type.includes('mp4')) {
+      extension = '.mp4';
+    } else if (audioFile.type.includes('webm')) {
+      extension = '.webm';
+    } else if (audioFile.type.includes('wav')) {
+      extension = '.wav';
+    } else if (audioFile.type.includes('ogg')) {
+      extension = '.ogg';
+    }
+
+    // Create a new File object with proper name and extension
+    // This is crucial for Whisper API to recognize the format
+    const fileName = `audio_${Date.now()}${extension}`;
+    
+    try {
+      // Convert the blob to a proper File object with correct name
+      const audioBuffer = await audioFile.arrayBuffer();
+      processedAudioFile = new File([audioBuffer], fileName, {
+        type: audioFile.type
+      });
+      
+      console.log('Created processed audio file:', fileName, 'Type:', processedAudioFile.type);
+    } catch (conversionError) {
+      console.error('Error processing audio file:', conversionError);
+      return NextResponse.json({ 
+        error: 'Failed to process audio file',
+        success: false 
+      }, { status: 400 });
+    }
 
     // For better accuracy, we'll try multiple approaches:
     // 1. First try with user's preferred language if it's English
@@ -30,7 +67,7 @@ export async function POST(request) {
         // For English, we can specify the language for better accuracy
         console.log('Transcribing with English language specification');
         transcription = await openai.audio.transcriptions.create({
-          file: audioFile,
+          file: processedAudioFile,
           model: "whisper-1",
           response_format: "text",
           language: 'en'
@@ -40,7 +77,7 @@ export async function POST(request) {
         // Whisper is better at detecting Bengali automatically
         console.log('Transcribing with auto-detection for Bengali');
         transcription = await openai.audio.transcriptions.create({
-          file: audioFile,
+          file: processedAudioFile,
           model: "whisper-1",
           response_format: "text"
           // No language parameter - let Whisper auto-detect
@@ -59,7 +96,7 @@ export async function POST(request) {
         console.log('Short English result for Bengali request, retrying with English setting...');
         try {
           const retryTranscription = await openai.audio.transcriptions.create({
-            file: audioFile,
+            file: processedAudioFile,
             model: "whisper-1",
             response_format: "text",
             language: 'en'
@@ -87,7 +124,7 @@ export async function POST(request) {
       try {
         console.log('Primary method failed, trying auto-detection fallback...');
         transcription = await openai.audio.transcriptions.create({
-          file: audioFile,
+          file: processedAudioFile,
           model: "whisper-1",
           response_format: "text"
           // No language parameter for auto-detection

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import LoginModal from '../components/LoginModal';
 import Image from 'next/image';
 
@@ -9,7 +8,6 @@ export default function TiaApa() {
   const [query, setQuery] = useState('');
   const [messages, setMessages] = useState([]); // {role: 'user'|'ai', content: string}
   const [isLoading, setIsLoading] = useState(false);
-  const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imageQuery, setImageQuery] = useState('');
@@ -19,20 +17,14 @@ export default function TiaApa() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [detectedLanguage, setDetectedLanguage] = useState('bn'); // 'bn' for Bangla, 'en' for English
   const [isVoiceQuery, setIsVoiceQuery] = useState(false); // Track if current query is from voice input
-  const [useWhisperForFinal, setUseWhisperForFinal] = useState(false); // Track if we should use Whisper for final result
+  const [recordingDuration, setRecordingDuration] = useState(0); // Track recording duration
   
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
-
-  const {
-    transcript: liveTranscript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition
-  } = useSpeechRecognition();
+  const recordingTimerRef = useRef(null);
 
   // Login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -261,14 +253,6 @@ export default function TiaApa() {
     }
   };
 
-  // Update query with live transcript from react-speech-recognition
-  useEffect(() => {
-    if (listening && liveTranscript) {
-      setQuery(liveTranscript);
-      setIsVoiceQuery(true);
-    }
-  }, [liveTranscript, listening]);
-
   // Cleanup media recorder on unmount
   useEffect(() => {
     return () => {
@@ -278,85 +262,178 @@ export default function TiaApa() {
     };
   }, []);
 
-  // Handle voice input with hybrid approach: react-speech-recognition + Whisper
+  // Handle voice input with mobile-friendly approach
   const handleVoiceInput = async () => {
     if (!requireLogin()) return;
     
-    if (!browserSupportsSpeechRecognition) {
-      const errorMsg = detectedLanguage === 'bn' 
-        ? 'আপনার ব্রাউজার ভয়েস রিকগনিশন সাপোর্ট করে না।'
-        : 'Your browser does not support voice recognition.';
-      setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
-      return;
-    }
-
-    if (listening || isRecording) {
-      // Stop both real-time recognition and recording
-      SpeechRecognition.stopListening();
-      
+    // Check if we're currently recording
+    if (isRecording) {
+      // Stop recording
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
         mediaRecorderRef.current.stop();
       }
       
+      // Clear recording timer
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+      
       setIsRecording(false);
+      setRecordingDuration(0);
       return;
     }
 
-    // Start both real-time recognition and recording for Whisper
-    try {
-      // Clear previous state
-      resetTranscript();
-      setQuery('');
-      setIsVoiceQuery(true);
-      setUseWhisperForFinal(true);
+    // Check for microphone support
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      const errorMsg = detectedLanguage === 'bn' 
+        ? 'আপনার ডিভাইস মাইক্রোফোন সাপোর্ট করে না।'
+        : 'Your device does not support microphone access.';
+      setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
+      return;
+    }
 
-      // Start react-speech-recognition for real-time display
-      const language = detectedLanguage === 'bn' ? 'bn-BD' : 'en-US';
-      await SpeechRecognition.startListening({ 
-        continuous: true, 
-        language: language,
-        interimResults: true 
+    // Start recording
+    try {
+      console.log('Starting voice recording...');
+      setIsVoiceQuery(true);
+      setQuery(''); // Clear any existing query
+      
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 44100
+        } 
       });
 
-      // Also start recording for Whisper API (for final accurate result)
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      console.log('Microphone access granted');
+      
+      // Create MediaRecorder with best supported format for Whisper
+      let mimeType;
+      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        mimeType = 'audio/webm;codecs=opus';
+      } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+        mimeType = 'audio/webm';
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        mimeType = 'audio/mp4';
+      } else if (MediaRecorder.isTypeSupported('audio/wav')) {
+        mimeType = 'audio/wav';
+      } else {
+        mimeType = ''; // Let browser choose
+      }
+      
+      console.log('Using MIME type:', mimeType);
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
       const audioChunks = [];
 
       recorder.ondataavailable = (event) => {
-        audioChunks.push(event.data);
+        if (event.data.size > 0) {
+          audioChunks.push(event.data);
+        }
       };
 
       recorder.onstop = async () => {
+        console.log('Recording stopped, processing audio...');
+        
         // Stop all tracks to release microphone
         stream.getTracks().forEach(track => track.stop());
         
-        // If we want Whisper for final result, process the recording
-        if (useWhisperForFinal && audioChunks.length > 0) {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        if (audioChunks.length > 0) {
+          const audioBlob = new Blob(audioChunks, { type: mimeType });
+          console.log('Audio blob created, size:', audioBlob.size);
+          
+          // Process with Whisper
           await processWithWhisper(audioBlob);
+        } else {
+          console.error('No audio data recorded');
+          const errorMsg = detectedLanguage === 'bn' 
+            ? 'কোন অডিও রেকর্ড হয়নি। আবার চেষ্টা করুন।'
+            : 'No audio recorded. Please try again.';
+          setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
         }
         
-        setUseWhisperForFinal(false);
+        // Clear recording timer
+        if (recordingTimerRef.current) {
+          clearInterval(recordingTimerRef.current);
+          recordingTimerRef.current = null;
+        }
+        
+        setIsRecording(false);
+        setIsVoiceQuery(false);
+        setRecordingDuration(0);
       };
 
+      recorder.onerror = (event) => {
+        console.error('Recording error:', event.error);
+        stream.getTracks().forEach(track => track.stop());
+        
+        // Clear recording timer
+        if (recordingTimerRef.current) {
+          clearInterval(recordingTimerRef.current);
+          recordingTimerRef.current = null;
+        }
+        
+        setIsRecording(false);
+        setIsVoiceQuery(false);
+        setRecordingDuration(0);
+        
+        const errorMsg = detectedLanguage === 'bn' 
+          ? 'রেকর্ডিং এ সমস্যা হয়েছে। আবার চেষ্টা করুন।'
+          : 'Recording failed. Please try again.';
+        setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
+      };
+
+      // Start recording
       recorder.start();
       mediaRecorderRef.current = recorder;
       setIsRecording(true);
+      setRecordingDuration(0);
+      
+      console.log('Recording started successfully');
+      
+      // Start recording timer
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
+      
+      // Show recording status in query field
+      setQuery(detectedLanguage === 'bn' ? '🎤 রেকর্ডিং চলছে...' : '🎤 Recording...');
 
     } catch (error) {
       console.error('Voice input error:', error);
-      const errorMsg = detectedLanguage === 'bn' 
-        ? 'মাইক্রোফোন অ্যাক্সেস করতে পারছি না।'
-        : 'Cannot access microphone.';
+      setIsRecording(false);
+      setIsVoiceQuery(false);
+      
+      let errorMsg;
+      if (error.name === 'NotAllowedError') {
+        errorMsg = detectedLanguage === 'bn' 
+          ? 'মাইক্রোফোন অনুমতি দিন। ব্রাউজার সেটিংস চেক করুন।'
+          : 'Microphone permission denied. Please check browser settings.';
+      } else if (error.name === 'NotFoundError') {
+        errorMsg = detectedLanguage === 'bn' 
+          ? 'কোন মাইক্রোফোন পাওয়া যায়নি।'
+          : 'No microphone found.';
+      } else {
+        errorMsg = detectedLanguage === 'bn' 
+          ? 'মাইক্রোফোন অ্যাক্সেস করতে পারছি না। আবার চেষ্টা করুন।'
+          : 'Cannot access microphone. Please try again.';
+      }
+      
       setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
     }
   };
 
-  // Process audio with Whisper API for final accurate transcription
+  // Process audio with Whisper API for transcription
   const processWithWhisper = async (audioBlob) => {
     try {
+      console.log('Processing audio with Whisper API...');
       setIsLoading(true);
+      
+      // Show processing status
+      setQuery(detectedLanguage === 'bn' ? '🎤 প্রসেসিং...' : '🎤 Processing...');
       
       const formData = new FormData();
       formData.append('audio', audioBlob);
@@ -367,34 +444,51 @@ export default function TiaApa() {
         body: formData
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
+      console.log('Whisper API response:', data);
       
-      if (data.success && data.transcript) {
-        // Replace the live transcript with Whisper's more accurate result
-        setQuery(data.transcript);
+      if (data.success && data.transcript && data.transcript.trim()) {
+        // Set the transcribed text in the query field
+        setQuery(data.transcript.trim());
         
         // Update detected language based on Whisper's analysis
         if (data.detectedLanguage) {
           setDetectedLanguage(data.detectedLanguage);
         }
         
-        console.log('Whisper transcription:', data.transcript);
-        console.log('Live transcription was:', liveTranscript);
+        console.log('Transcription successful:', data.transcript);
         
-        // Focus on the input so user can see the final transcribed text
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
+        // Focus on the input so user can see and edit the transcribed text
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }, 100);
+        
       } else {
-        console.error('Whisper transcription failed, keeping live transcript');
-        // Keep the live transcript if Whisper fails
+        console.error('Whisper transcription failed or empty:', data);
+        setQuery(''); // Clear the processing message
+        
+        const errorMsg = detectedLanguage === 'bn' 
+          ? 'কোন কথা শোনা যায়নি। আবার চেষ্টা করুন।'
+          : 'No speech detected. Please try again.';
+        setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
       }
     } catch (error) {
       console.error('Whisper processing error:', error);
-      // Keep the live transcript if Whisper fails
-      console.log('Keeping live transcript due to Whisper error');
+      setQuery(''); // Clear the processing message
+      
+      const errorMsg = detectedLanguage === 'bn' 
+        ? 'ভয়েস প্রসেসিং এ সমস্যা হয়েছে। আবার চেষ্টা করুন।'
+        : 'Voice processing failed. Please try again.';
+      setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
     } finally {
       setIsLoading(false);
+      setIsVoiceQuery(false);
     }
   };
 
@@ -541,17 +635,20 @@ export default function TiaApa() {
     setUploadedImage(null);
     setImageQuery('');
     setIsVoiceQuery(false);
-    setUseWhisperForFinal(false);
     
-    // Stop any active voice recognition
-    if (listening) {
-      SpeechRecognition.stopListening();
-    }
+    // Stop any active voice recording
     if (isRecording && mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.stop();
     }
+    
+    // Clear recording timer
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+    
     setIsRecording(false);
-    resetTranscript();
+    setRecordingDuration(0);
   };
 
   // Handle mobile keyboard visibility
@@ -572,13 +669,6 @@ export default function TiaApa() {
     };
   }, []);
 
-  // Check browser support on mount
-  useEffect(() => {
-    if (!browserSupportsSpeechRecognition) {
-      console.warn('Browser does not support speech recognition');
-    }
-  }, [browserSupportsSpeechRecognition]);
-
   return (
     <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* Login Modal */}
@@ -596,8 +686,8 @@ export default function TiaApa() {
             <Image 
               src="/logo.png" 
               alt="Tia Apa Logo" 
-              width={56} height={56} 
-              className="h-10 w-10 sm:h-14 sm:w-14 object-contain"
+              width={80} height={80} 
+              className="h-16 w-16 sm:h-20 sm:w-20 object-contain"
               priority
             />
             <div>
@@ -743,14 +833,12 @@ export default function TiaApa() {
                   placeholder={
                     !isLoggedIn
                       ? "লগইন করুন প্রশ্ন করার জন্য"
-                      : listening
-                      ? (detectedLanguage === 'bn' ? "🎤 শুনছি..." : "🎤 Listening...")
-                      : isRecording && !listening
-                      ? (detectedLanguage === 'bn' ? "🎤 প্রসেসিং..." : "🎤 Processing...")
+                      : isRecording
+                      ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
                       : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
                   }
                   className={`flex-1 min-w-0 px-4 py-3 bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 text-base ${
-                    listening || isRecording ? 'placeholder-red-500' : ''
+                    isRecording ? 'placeholder-red-500' : ''
                   } ${!isLoggedIn ? 'cursor-not-allowed' : ''}`}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e); }}
                   onFocus={() => setShowSuggestions(suggestions.length > 0)}
@@ -758,14 +846,17 @@ export default function TiaApa() {
                   ref={inputRef}
                 />
                 
-                {/* Send Button */}
-                <button
-                  type="submit"
-                  disabled={isLoading || !query.trim() || !isLoggedIn}
-                  className="flex-shrink-0 w-10 h-10 rounded-full bg-pink-500 text-white hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-                >
-                  <span className="text-base">➤</span>
-                </button>
+                                  {/* Send Button */}
+                  <button
+                    type="submit"
+                    disabled={isLoading || !query.trim() || !isLoggedIn}
+                    className="flex-shrink-0 w-12 h-12 rounded-full bg-pink-500 text-white hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 2L11 13"/>
+                      <polygon points="22,2 15,22 11,13 2,9 22,2"/>
+                    </svg>
+                  </button>
               </div>
               
               {/* Mobile Bottom Row: Other Buttons */}
@@ -775,18 +866,23 @@ export default function TiaApa() {
                   type="button"
                   onClick={handleVoiceInput}
                   disabled={!isLoggedIn}
-                  className={`flex-shrink-0 w-10 h-10 rounded-full transition-colors flex items-center justify-center ${
-                    listening || isRecording
+                  className={`flex-shrink-0 w-12 h-12 rounded-full transition-colors flex items-center justify-center ${
+                    isRecording
                       ? 'bg-red-500 text-white animate-pulse' 
-                      : 'bg-pink-500 text-white hover:bg-pink-600'
+                      : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                   } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                   title={
-                    listening || isRecording
+                    isRecording
                       ? (detectedLanguage === 'bn' ? 'রেকর্ডিং বন্ধ করুন' : 'Stop Recording')
                       : (detectedLanguage === 'bn' ? 'ভয়েস রেকর্ডিং শুরু করুন' : 'Start Voice Recording')
                   }
                 >
-                  <span className="text-base">🎤</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                  </svg>
                 </button>
                 
                 {/* Language Toggle Button */}
@@ -795,29 +891,16 @@ export default function TiaApa() {
                   onClick={() => {
                     const newLang = detectedLanguage === 'bn' ? 'en' : 'bn';
                     setDetectedLanguage(newLang);
-                    
-                    // If currently listening, restart with new language
-                    if (listening) {
-                      SpeechRecognition.stopListening();
-                      setTimeout(() => {
-                        const language = newLang === 'bn' ? 'bn-BD' : 'en-US';
-                        SpeechRecognition.startListening({ 
-                          continuous: true, 
-                          language: language,
-                          interimResults: true 
-                        });
-                      }, 100);
-                    }
                   }}
                   disabled={!isLoggedIn}
-                  className={`flex-shrink-0 w-10 h-10 rounded-full transition-colors flex items-center justify-center text-xs font-bold ${
+                  className={`flex-shrink-0 w-12 h-12 rounded-full transition-colors flex items-center justify-center text-xs font-bold ${
                     detectedLanguage === 'bn' 
-                      ? 'bg-green-500 text-white hover:bg-green-600' 
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                      ? 'bg-green-200 text-green-700 hover:bg-green-300' 
+                      : 'bg-blue-200 text-blue-700 hover:bg-blue-300'
                   } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                   title={detectedLanguage === 'bn' ? 'Switch to English' : 'Switch to Bengali'}
                 >
-                  <span className="text-sm leading-none">{detectedLanguage === 'bn' ? 'বাং' : 'EN'}</span>
+                  <span className="text-sm leading-none font-semibold">{detectedLanguage === 'bn' ? 'বাং' : 'EN'}</span>
                 </button>
                 
                 {/* Image Upload Button */}
@@ -825,11 +908,15 @@ export default function TiaApa() {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={!isLoggedIn}
-                  className={`flex-shrink-0 w-10 h-10 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition-colors flex items-center justify-center ${
+                  className={`flex-shrink-0 w-12 h-12 rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 transition-colors flex items-center justify-center ${
                     !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
-                  <span className="text-base">📷</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21,15 16,10 5,21"/>
+                  </svg>
                 </button>
                 
                 {/* Refresh Button */}
@@ -837,11 +924,15 @@ export default function TiaApa() {
                   type="button"
                   onClick={clearAll}
                   disabled={!isLoggedIn}
-                  className={`flex-shrink-0 w-10 h-10 rounded-full bg-gray-400 text-white hover:bg-gray-500 transition-colors flex items-center justify-center ${
+                  className={`flex-shrink-0 w-12 h-12 rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 transition-colors flex items-center justify-center ${
                     !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
-                  <span className="text-base">🔄</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="23,4 23,10 17,10"/>
+                    <polyline points="1,20 1,14 7,14"/>
+                    <path d="M20.49,9A9,9,0,0,0,5.64,5.64L1,10m22,4L18.36,18.36A9,9,0,0,1,3.51,15"/>
+                  </svg>
                 </button>
               </div>
             </div>
@@ -853,18 +944,23 @@ export default function TiaApa() {
                 type="button"
                 onClick={handleVoiceInput}
                 disabled={!isLoggedIn}
-                className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-colors flex items-center justify-center ${
-                  listening || isRecording
+                className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-colors flex items-center justify-center ${
+                  isRecording
                     ? 'bg-red-500 text-white animate-pulse' 
-                    : 'bg-pink-500 text-white hover:bg-pink-600'
+                    : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                 } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                 title={
-                  listening || isRecording
+                  isRecording
                     ? (detectedLanguage === 'bn' ? 'রেকর্ডিং বন্ধ করুন' : 'Stop Recording')
                     : (detectedLanguage === 'bn' ? 'ভয়েস রেকর্ডিং শুরু করুন' : 'Start Voice Recording')
                 }
               >
-                <span className="text-xs sm:text-base">🎤</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" y1="19" x2="12" y2="23"/>
+                  <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
               </button>
               
               {/* Language Toggle Button */}
@@ -873,29 +969,16 @@ export default function TiaApa() {
                 onClick={() => {
                   const newLang = detectedLanguage === 'bn' ? 'en' : 'bn';
                   setDetectedLanguage(newLang);
-                  
-                  // If currently listening, restart with new language
-                  if (listening) {
-                    SpeechRecognition.stopListening();
-                    setTimeout(() => {
-                      const language = newLang === 'bn' ? 'bn-BD' : 'en-US';
-                      SpeechRecognition.startListening({ 
-                        continuous: true, 
-                        language: language,
-                        interimResults: true 
-                      });
-                    }, 100);
-                  }
                 }}
                 disabled={!isLoggedIn}
-                className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-colors flex items-center justify-center text-xs font-bold ${
+                className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-colors flex items-center justify-center text-xs font-bold ${
                   detectedLanguage === 'bn' 
-                    ? 'bg-green-500 text-white hover:bg-green-600' 
-                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                    ? 'bg-green-200 text-green-700 hover:bg-green-300' 
+                    : 'bg-blue-200 text-blue-700 hover:bg-blue-300'
                 } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                 title={detectedLanguage === 'bn' ? 'Switch to English' : 'Switch to Bengali'}
               >
-                <span className="text-xs sm:text-sm leading-none">{detectedLanguage === 'bn' ? 'বাং' : 'EN'}</span>
+                <span className="text-xs sm:text-sm leading-none font-semibold">{detectedLanguage === 'bn' ? 'বাং' : 'EN'}</span>
               </button>
                   
               {/* Text Input */}
@@ -906,17 +989,15 @@ export default function TiaApa() {
                   setQuery(e.target.value);
                 }}
                 disabled={!isLoggedIn}
-                placeholder={
-                  !isLoggedIn
-                    ? "লগইন করুন প্রশ্ন করার জন্য"
-                    : listening
-                    ? (detectedLanguage === 'bn' ? "🎤 শুনছি..." : "🎤 Listening...")
-                    : isRecording && !listening
-                    ? (detectedLanguage === 'bn' ? "🎤 প্রসেসিং..." : "🎤 Processing...")
-                    : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
-                }
+                                     placeholder={
+                    !isLoggedIn
+                      ? "লগইন করুন প্রশ্ন করার জন্য"
+                      : isRecording
+                      ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
+                      : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
+                  }
                 className={`flex-1 min-w-0 px-2 sm:px-4 py-2 sm:py-2.5 bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 text-xs sm:text-base ${
-                  listening || isRecording ? 'placeholder-red-500' : ''
+                  isRecording ? 'placeholder-red-500' : ''
                 } ${!isLoggedIn ? 'cursor-not-allowed' : ''}`}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e); }}
                 onFocus={() => setShowSuggestions(suggestions.length > 0)}
@@ -924,38 +1005,49 @@ export default function TiaApa() {
                 ref={inputRef}
               />
                   
-              {/* Image Upload Button */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={!isLoggedIn}
-                className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition-colors flex items-center justify-center ${
-                  !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                <span className="text-xs sm:text-base">📷</span>
-              </button>
+                                {/* Image Upload Button */}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={!isLoggedIn}
+                    className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 transition-colors flex items-center justify-center ${
+                      !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21,15 16,10 5,21"/>
+                    </svg>
+                  </button>
                   
-              {/* Refresh Button */}
-              <button
-                type="button"
-                onClick={clearAll}
-                disabled={!isLoggedIn}
-                className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-400 text-white hover:bg-gray-500 transition-colors flex items-center justify-center ${
-                  !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                <span className="text-xs sm:text-base">🔄</span>
-              </button>
+                  {/* Refresh Button */}
+                  <button
+                    type="button"
+                    onClick={clearAll}
+                    disabled={!isLoggedIn}
+                    className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 transition-colors flex items-center justify-center ${
+                      !isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
+                      <polyline points="23,4 23,10 17,10"/>
+                      <polyline points="1,20 1,14 7,14"/>
+                      <path d="M20.49,9A9,9,0,0,0,5.64,5.64L1,10m22,4L18.36,18.36A9,9,0,0,1,3.51,15"/>
+                    </svg>
+                  </button>
                   
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isLoading || !query.trim() || !isLoggedIn}
-                className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pink-500 text-white hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-              >
-                <span className="text-xs sm:text-base">➤</span>
-              </button>
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isLoading || !query.trim() || !isLoggedIn}
+                    className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-pink-500 text-white hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
+                      <path d="M22 2L11 13"/>
+                      <polygon points="22,2 15,22 11,13 2,9 22,2"/>
+                    </svg>
+                  </button>
             </div>
             
             {/* Hidden file input */}
@@ -1021,3 +1113,4 @@ export default function TiaApa() {
     </div>
   );
 }
+
