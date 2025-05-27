@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function AdminDashboard() {
   const [csvData, setCsvData] = useState([]);
@@ -14,7 +14,7 @@ export default function AdminDashboard() {
   });
 
   // Fetch CSV data
-  const fetchCSVData = async () => {
+  const fetchCSVData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/admin/csv-data');
@@ -32,7 +32,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Calculate statistics
   const calculateStats = (data) => {
@@ -94,7 +94,7 @@ export default function AdminDashboard() {
   // Load data on component mount
   useEffect(() => {
     fetchCSVData();
-  }, []);
+  }, [fetchCSVData]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
             </div>
           ) : csvData.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              No data available. Users haven't submitted any queries yet.
+              No data available. Users haven&apos;t submitted any queries yet.
             </div>
           ) : (
             <div className="overflow-x-auto">
