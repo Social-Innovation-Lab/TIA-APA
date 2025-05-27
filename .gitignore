@@ -43,3 +43,5 @@ public/*.csv
 # Logs
 logs
 *.log
+
+.vercel

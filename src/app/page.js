@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import LoginModal from '../components/LoginModal';
+import Image from 'next/image';
 
 export default function TiaApa() {
   const [query, setQuery] = useState('');
@@ -150,20 +151,19 @@ export default function TiaApa() {
   // Debounced suggestions - faster response
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (query.trim().length > 2 && !isRecording) { // Reduced from 3 to 2 characters
+      if (query.trim().length > 2 && !isRecording) {
         fetchSuggestions(query);
       } else {
         setSuggestions([]);
         setShowSuggestions(false);
         setLoadingSuggestions(false);
       }
-    }, 200); // Reduced from 500ms to 200ms for faster response
-
+    }, 200);
     return () => clearTimeout(timeoutId);
-  }, [query, isRecording]);
+  }, [query, isRecording, fetchSuggestions]);
 
   // Fetch query suggestions with language-specific filtering - optimized for speed
-  const fetchSuggestions = async (input) => {
+  const fetchSuggestions = useCallback(async (input) => {
     try {
       setLoadingSuggestions(true);
       
@@ -205,7 +205,7 @@ export default function TiaApa() {
     } finally {
       setLoadingSuggestions(false);
     }
-  };
+  }, [detectedLanguage, setSuggestions, setShowSuggestions, setLoadingSuggestions]);
 
   // Handle suggestion click
   const handleSuggestionClick = (suggestion) => {
@@ -593,10 +593,12 @@ export default function TiaApa() {
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
           {/* Logo Section */}
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <img 
+            <Image 
               src="/logo.png" 
               alt="Tia Apa Logo" 
+              width={56} height={56} 
               className="h-10 w-10 sm:h-14 sm:w-14 object-contain"
+              priority
             />
             <div>
               <h1 className="text-lg sm:text-xl font-bold text-gray-900">টিয়া আপা</h1>
@@ -632,10 +634,12 @@ export default function TiaApa() {
             )}
           
           {/* Pinwheel Icon */}
-            <img 
+            <Image 
               src="/pinwheel.gif" 
               alt="Pinwheel" 
+              width={56} height={56} 
               className="h-10 w-10 sm:h-14 sm:w-14 object-contain"
+              priority
             />
           </div>
         </div>
@@ -685,9 +689,10 @@ export default function TiaApa() {
                         {/* Display image if present */}
                         {msg.image && (
                           <div className={`mb-2 sm:mb-3 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
-                            <img 
+                            <Image 
                               src={msg.image} 
                               alt="Uploaded" 
+                              width={150} height={120}
                               className="max-w-full max-h-32 sm:max-h-48 rounded-lg border border-gray-200"
                               style={{ maxWidth: '150px' }}
                             />
@@ -847,9 +852,10 @@ export default function TiaApa() {
               {/* Uploaded Image Preview */}
               {uploadedImage && (
             <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-pink-50 rounded-lg border border-pink-200">
-              <img 
+              <Image 
                 src={uploadedImage} 
                 alt="Uploaded" 
+                width={200} height={100}
                 className="max-w-full max-h-24 sm:max-h-32 mx-auto rounded-lg mb-2 border border-gray-200" 
               />
                   <input
@@ -865,7 +871,7 @@ export default function TiaApa() {
                 className="mt-2 w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 disabled:opacity-50 text-sm"
                   >
                 {detectedLanguage === 'bn' ? 'ছবি বিশ্লেষণ করুন' : 'Analyze Image'}
-              </button>
+                  </button>
             </div>
           )}
 
