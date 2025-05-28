@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import LoginModal from '../components/LoginModal';
 import Image from 'next/image';
+import { useDeepgramVoice } from '../hooks/useDeepgramVoice';
 
 export default function TiaApa() {
   const [query, setQuery] = useState('');
@@ -30,6 +31,21 @@ export default function TiaApa() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // Deepgram voice recognition hook
+  const {
+    isRecording: isDeepgramRecording,
+    transcript: deepgramTranscript,
+    interimTranscript,
+    isConnected: isDeepgramConnected,
+    detectedLanguage: deepgramLanguage,
+    confidence: deepgramConfidence,
+    error: deepgramError,
+    startRecording: startDeepgramRecording,
+    stopRecording: stopDeepgramRecording,
+    resetTranscript: resetDeepgramTranscript,
+    cleanup: cleanupDeepgram
+  } = useDeepgramVoice();
 
   // Check for existing session on component mount
   useEffect(() => {
@@ -262,13 +278,29 @@ export default function TiaApa() {
     };
   }, []);
 
-  // Handle voice input with mobile-friendly approach
+  // Handle voice input with Deepgram (primary) and Whisper (fallback)
   const handleVoiceInput = async () => {
     if (!requireLogin()) return;
     
     // Check if we're currently recording
-    if (isRecording) {
-      // Stop recording
+    if (isRecording || isDeepgramRecording) {
+      // Stop Deepgram recording if active
+      if (isDeepgramRecording) {
+        stopDeepgramRecording();
+        
+        // Use the final transcript from Deepgram
+        const finalTranscript = (deepgramTranscript + ' ' + interimTranscript).trim();
+        if (finalTranscript) {
+          setQuery(finalTranscript);
+          if (deepgramLanguage) {
+            setDetectedLanguage(deepgramLanguage);
+          }
+        }
+        setIsVoiceQuery(true);
+        return;
+      }
+      
+      // Stop legacy recording if active
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
         mediaRecorderRef.current.stop();
       }
@@ -293,9 +325,34 @@ export default function TiaApa() {
       return;
     }
 
-    // Start recording
+    // Try Deepgram first, fallback to Whisper if it fails
     try {
-      console.log('Starting voice recording...');
+      console.log('Starting Deepgram voice recording...');
+      setIsVoiceQuery(true);
+      setQuery(''); // Clear any existing query
+      resetDeepgramTranscript();
+      
+      await startDeepgramRecording();
+      
+      // Start recording timer for UI feedback
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
+      
+      console.log('Deepgram recording started successfully');
+      
+    } catch (error) {
+      console.warn('Deepgram failed, falling back to Whisper:', error);
+      
+      // Fallback to legacy Whisper system
+      await handleLegacyVoiceInput();
+    }
+  };
+
+  // Legacy voice input with Whisper (fallback)
+  const handleLegacyVoiceInput = async () => {
+    try {
+      console.log('Starting legacy voice recording...');
       setIsVoiceQuery(true);
       setQuery(''); // Clear any existing query
       
@@ -669,6 +726,20 @@ export default function TiaApa() {
     };
   }, []);
 
+  // Cleanup Deepgram on unmount
+  useEffect(() => {
+    return () => {
+      cleanupDeepgram();
+    };
+  }, [cleanupDeepgram]);
+
+  // Handle Deepgram errors
+  useEffect(() => {
+    if (deepgramError) {
+      setMessages((prev) => [...prev, { role: 'ai', content: deepgramError }]);
+    }
+  }, [deepgramError]);
+
   return (
     <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* Login Modal */}
@@ -833,6 +904,11 @@ export default function TiaApa() {
                   placeholder={
                     !isLoggedIn
                       ? "প্রশ্ন করার জন্য লগইন করুন"
+                      : isDeepgramRecording
+                      ? (interimTranscript 
+                          ? `🎤 ${interimTranscript}...` 
+                          : (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
+                        )
                       : isRecording
                       ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
                       : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
@@ -867,12 +943,12 @@ export default function TiaApa() {
                   onClick={handleVoiceInput}
                   disabled={!isLoggedIn}
                   className={`flex-shrink-0 w-12 h-12 rounded-full transition-colors flex items-center justify-center ${
-                    isRecording
+                    (isRecording || isDeepgramRecording)
                       ? 'bg-red-500 text-white animate-pulse' 
                       : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                   } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                   title={
-                    isRecording
+                    (isRecording || isDeepgramRecording)
                       ? (detectedLanguage === 'bn' ? 'রেকর্ডিং বন্ধ করুন' : 'Stop Recording')
                       : (detectedLanguage === 'bn' ? 'ভয়েস রেকর্ডিং শুরু করুন' : 'Start Voice Recording')
                   }
@@ -945,12 +1021,12 @@ export default function TiaApa() {
                 onClick={handleVoiceInput}
                 disabled={!isLoggedIn}
                 className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-colors flex items-center justify-center ${
-                  isRecording
+                  (isRecording || isDeepgramRecording)
                     ? 'bg-red-500 text-white animate-pulse' 
                     : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                 } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                 title={
-                  isRecording
+                  (isRecording || isDeepgramRecording)
                     ? (detectedLanguage === 'bn' ? 'রেকর্ডিং বন্ধ করুন' : 'Stop Recording')
                     : (detectedLanguage === 'bn' ? 'ভয়েস রেকর্ডিং শুরু করুন' : 'Start Voice Recording')
                 }
@@ -992,6 +1068,11 @@ export default function TiaApa() {
                                      placeholder={
                     !isLoggedIn
                       ? "প্রশ্ন করার জন্য লগইন করুন"
+                      : isDeepgramRecording
+                      ? (interimTranscript 
+                          ? `🎤 ${interimTranscript}...` 
+                          : (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
+                        )
                       : isRecording
                       ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
                       : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
