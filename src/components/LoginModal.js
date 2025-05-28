@@ -110,7 +110,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 placeholder="Type in English"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-black"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-gray-700 text-sm font-medium"
               />
             </div>
 
@@ -123,11 +123,11 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
                 value={formData.clinicName}
                 onChange={(e) => handleInputChange('clinicName', e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-black"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-gray-700 text-sm font-medium"
               >
-                <option value="">Select Clinic/ক্লিনিক নির্বাচন করুন</option>
-                <option value="Nilganj">Nilganj/নীলগঞ্জ</option>
-                <option value="Rampal">Rampal/রামপাল</option>
+                <option value="" className="text-gray-700 text-sm font-medium">Select Clinic/ক্লিনিক নির্বাচন করুন</option>
+                <option value="Nilganj" className="text-gray-700 text-sm font-medium">Nilganj/নীলগঞ্জ</option>
+                <option value="Rampal" className="text-gray-700 text-sm font-medium">Rampal/রামপাল</option>
               </select>
             </div>
 
