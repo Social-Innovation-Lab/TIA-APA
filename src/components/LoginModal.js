@@ -5,7 +5,7 @@ import { useState } from 'react';
 export default function LoginModal({ isOpen, onClose, onLogin }) {
   const [formData, setFormData] = useState({
     email: '',
-    location: '',
+    clinicLocation: '',
     clinicName: ''
   });
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
         onClose();
         
         // Reset form
-        setFormData({ email: '', location: '', clinicName: '' });
+        setFormData({ email: '', clinicLocation: '', clinicName: '' });
       } else {
         setError(data.error || 'লগইনে সমস্যা হয়েছে');
       }
@@ -115,21 +115,6 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
               />
             </div>
 
-            {/* Location Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Location/লোকেশন *
-              </label>
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                placeholder="Type in English"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-black"
-              />
-            </div>
-
             {/* Clinic Name Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -143,6 +128,23 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-black"
               />
+            </div>
+
+            {/* Clinic Location Dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Clinic Location/ক্লিনিকের অবস্থান *
+              </label>
+              <select
+                value={formData.clinicLocation}
+                onChange={(e) => handleInputChange('clinicLocation', e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-black"
+              >
+                <option value="">Select Location/অবস্থান নির্বাচন করুন</option>
+                <option value="Nilganj">Nilganj/নীলগঞ্জ</option>
+                <option value="Rampal">Rampal/রামপাল</option>
+              </select>
             </div>
 
             {/* Buttons */}

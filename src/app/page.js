@@ -832,7 +832,7 @@ export default function TiaApa() {
                   disabled={!isLoggedIn}
                   placeholder={
                     !isLoggedIn
-                      ? "লগইন করুন প্রশ্ন করার জন্য"
+                      ? "প্রশ্ন করার জন্য লগইন করুন"
                       : isRecording
                       ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
                       : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
@@ -991,7 +991,7 @@ export default function TiaApa() {
                 disabled={!isLoggedIn}
                                      placeholder={
                     !isLoggedIn
-                      ? "লগইন করুন প্রশ্ন করার জন্য"
+                      ? "প্রশ্ন করার জন্য লগইন করুন"
                       : isRecording
                       ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
                       : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")

@@ -790,7 +790,7 @@ export default function TiaApa() {
                 disabled={!isLoggedIn}
                 placeholder={
                   !isLoggedIn
-                    ? "লগইন করুন প্রশ্ন করার জন্য"
+                    ? "প্রশ্ন করার জন্য লগইন করুন"
                     : listening
                     ? (detectedLanguage === 'bn' ? "🎤 শুনছি..." : "🎤 Listening...")
                     : isRecording && !listening

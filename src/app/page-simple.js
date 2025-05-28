@@ -184,7 +184,7 @@ export default function TiaApaSimple() {
                 disabled={!isLoggedIn}
                 placeholder={
                   !isLoggedIn
-                    ? "লগইন করুন প্রশ্ন করার জন্য"
+                    ? "প্রশ্ন করার জন্য লগইন করুন"
                     : "দয়া করে আপনার সমস্যা লিখুন"
                 }
                 className="flex-1 px-4 py-2 bg-transparent border-none outline-none text-gray-700 placeholder-gray-500"
