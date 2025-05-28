@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import Papa from 'papaparse';
 import fs from 'fs';
 import path from 'path';
+import { retrieveRelevantKnowledge, createRAGPrompt, enhancedRAGSearch } from '../../../lib/rag';
 
 // Initialize AI client based on available API keys
 function initializeAIClient() {
@@ -67,6 +68,60 @@ async function loadAndFormatCSVData() {
   }
   
   return formattedData;
+}
+
+// Enhanced RAG-based search
+async function ragBasedSearch(query, userLocation = 'Bangladesh') {
+  try {
+    console.log('🔍 Starting enhanced RAG-based search for:', query);
+    
+    // Step 1: Get enhanced RAG results with web integration
+    const ragResults = await enhancedRAGSearch(query, userLocation, 3);
+    console.log(`📊 RAG Results - Local: ${ragResults.localCount}, Web: ${ragResults.webCount}`);
+    
+    // Step 2: Load CSV data for additional context
+    const csvData = await loadAndFormatCSVData();
+    
+    // Step 3: Create final prompt combining RAG and CSV data
+    const finalPrompt = csvData ? 
+      `${ragResults.prompt}\n\nADDITIONAL REFERENCE DATA:\n${csvData.substring(0, 1500)}...` : 
+      ragResults.prompt;
+    
+    // Step 4: Get AI response with enhanced context
+    const completion = await aiConfig.client.chat.completions.create({
+      model: aiConfig.model,
+      messages: [
+        {
+          role: "system",
+          content: finalPrompt
+        },
+        {
+          role: "user", 
+          content: query
+        }
+      ],
+      max_tokens: 1200,
+      temperature: 0.3
+    });
+    
+    const response = completion.choices[0].message.content;
+    console.log('✅ Enhanced RAG response generated successfully');
+    
+    // Return response with metadata
+    return {
+      response,
+      metadata: {
+        localSources: ragResults.localCount,
+        webSources: ragResults.webCount,
+        csvData: csvData ? true : false,
+        enhanced: true
+      }
+    };
+    
+  } catch (error) {
+    console.error('❌ Enhanced RAG search error:', error);
+    throw error;
+  }
 }
 
 // Create or get assistant
@@ -197,35 +252,54 @@ async function fallbackSearch(query) {
 
 export async function POST(request) {
   try {
-    const { query, type = 'text' } = await request.json();
+    const { query, type = 'text', userLocation = 'Bangladesh' } = await request.json();
     
     if (!query || !query.trim()) {
       return NextResponse.json({ error: 'Query is required' }, { status: 400 });
     }
 
     let response = '';
-    let source = 'assistant';
+    let source = 'rag';
+    let metadata = {};
     
     try {
-      // Load CSV data
-      const csvData = await loadAndFormatCSVData();
+      // Primary: Use enhanced RAG-based search for maximum accuracy
+      console.log('🚀 Using enhanced RAG-based search as primary method');
+      const ragResult = await ragBasedSearch(query, userLocation);
+      response = ragResult.response;
+      metadata = ragResult.metadata;
+      source = 'enhanced_rag';
       
-      // Search using AI Assistant
-      response = await searchWithAssistant(query, csvData);
-      source = 'assistant_csv';
+    } catch (ragError) {
+      console.error('Enhanced RAG search error, falling back to assistant:', ragError);
       
-    } catch (assistantError) {
-      console.error('Assistant API error:', assistantError);
-      
-      // Fallback to direct GPT-4o
-      response = await fallbackSearch(query);
-      source = 'gpt4o_fallback';
+      try {
+        // Fallback 1: Use AI Assistant with CSV data
+        const csvData = await loadAndFormatCSVData();
+        response = await searchWithAssistant(query, csvData);
+        source = 'assistant_csv';
+        metadata = { csvData: true, enhanced: false };
+        
+      } catch (assistantError) {
+        console.error('Assistant API error, using final fallback:', assistantError);
+        
+        // Fallback 2: Direct GPT-4o
+        response = await fallbackSearch(query);
+        source = 'gpt4o_fallback';
+        metadata = { enhanced: false };
+      }
     }
+
+    // Log the search method used
+    console.log(`✅ Search completed using: ${source}`);
+    console.log(`📊 Metadata:`, metadata);
 
     return NextResponse.json({ 
       response,
       source,
-      confidence: 0.9
+      metadata,
+      confidence: source === 'enhanced_rag' ? 0.98 : (source === 'assistant_csv' ? 0.85 : 0.75),
+      enhanced: metadata.enhanced || false
     });
 
   } catch (error) {
@@ -233,7 +307,9 @@ export async function POST(request) {
     return NextResponse.json(
       { 
         response: 'দুঃখিত, এই মুহূর্তে আমি আপনার প্রশ্নের উত্তর দিতে পারছি না। অনুগ্রহ করে পরে আবার চেষ্টা করুন।',
-        error: 'Internal server error' 
+        error: 'Internal server error',
+        source: 'error',
+        enhanced: false
       },
       { status: 500 }
     );
