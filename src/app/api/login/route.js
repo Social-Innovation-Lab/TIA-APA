@@ -32,10 +32,9 @@ function initializeCSV() {
 }
 
 // Validate user credentials
-function validateCredentials(email, clinicLocation, clinicName) {
+function validateCredentials(email, clinicName) {
   // Basic validation
   if (!email || !email.trim()) return false;
-  if (!clinicLocation || !clinicLocation.trim()) return false;
   if (!clinicName || !clinicName.trim()) return false;
   
   // Email format validation
@@ -49,11 +48,11 @@ export async function POST(request) {
   try {
     console.log('Login API called');
     
-    const { email, clinicLocation, clinicName } = await request.json();
-    console.log('Received login data:', { email, clinicLocation, clinicName });
+    const { email, clinicName } = await request.json();
+    console.log('Received login data:', { email, clinicName });
     
     // Validate credentials
-    if (!validateCredentials(email, clinicLocation, clinicName)) {
+    if (!validateCredentials(email, clinicName)) {
       console.log('Validation failed');
       return NextResponse.json({ 
         success: false, 
@@ -72,7 +71,7 @@ export async function POST(request) {
     // Store user session data (in a real app, use proper session management)
     const sessionData = {
       email: email.trim(),
-      location: clinicLocation.trim(),
+      location: clinicName.trim(), // Use clinicName as location
       clinicName: clinicName.trim(),
       loginTime: new Date().toISOString(),
       sessionToken
