@@ -270,3 +270,5 @@ This project is developed for agricultural education and support in Bangladesh.
 **Empowering Bangladesh farmers with AI technology and comprehensive data tracking!**
 
 *Made with love for the farming community of Bangladesh*
+#   U p d a t e d   f o r   p r o d u c t i o n   d e p l o y m e n t  
+ 
