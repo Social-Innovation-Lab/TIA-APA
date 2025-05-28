@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export default function LoginModal({ isOpen, onClose, onLogin }) {
   const [formData, setFormData] = useState({
-    email: '',
+    contact: '',
     clinicName: ''
   });
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
         onClose();
         
         // Reset form
-        setFormData({ email: '', clinicName: '' });
+        setFormData({ contact: '', clinicName: '' });
       } else {
         setError(data.error || 'লগইনে সমস্যা হয়েছে');
       }
@@ -99,16 +99,16 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email Field */}
+            {/* Contact Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email/ইমেইল *
+                ফোন নম্বর/Phone Number বা/or,  ইমেইল/Email *
               </label>
               <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="Type in English"
+                type="text"
+                value={formData.contact}
+                onChange={(e) => handleInputChange('contact', e.target.value)}
+                placeholder="Type phone number or email (in English)"
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-gray-700 text-sm font-medium"
               />

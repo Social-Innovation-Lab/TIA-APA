@@ -11,20 +11,14 @@ export default function TiaApa() {
   const [transcript, setTranscript] = useState('');
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imageQuery, setImageQuery] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [detectedLanguage, setDetectedLanguage] = useState('bn'); // 'bn' for Bangla, 'en' for English
-  const [isVoiceQuery, setIsVoiceQuery] = useState(false); // Track if current query is from voice input
-  const [recordingDuration, setRecordingDuration] = useState(0); // Track recording duration
   
   const fileInputRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
-  const recordingTimerRef = useRef(null);
 
   // Login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -151,7 +145,7 @@ export default function TiaApa() {
       if (!response.ok) {
         throw new Error('Failed to fetch suggestions');
       }
-      
+
       const data = await response.json();
       
       if (data.suggestions && data.suggestions.length > 0) {
@@ -188,7 +182,7 @@ export default function TiaApa() {
   // Debounced suggestions - faster response
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (query.trim().length > 2 && !isRecording) {
+      if (query.trim().length > 2) {
         fetchSuggestions(query);
       } else {
         setSuggestions([]);
@@ -197,7 +191,7 @@ export default function TiaApa() {
       }
     }, 200);
     return () => clearTimeout(timeoutId);
-  }, [query, isRecording, fetchSuggestions]);
+  }, [query, fetchSuggestions]);
 
   // Handle suggestion click
   const handleSuggestionClick = (suggestion) => {
@@ -217,7 +211,7 @@ export default function TiaApa() {
     setIsLoading(true);
     setMessages((prev) => [...prev, { role: 'user', content: query }]);
     
-    const queryType = isVoiceQuery ? 'Voice' : 'Text';
+    const queryType = 'Text';
 
     try {
       const response = await fetch('/api/search', {
@@ -232,7 +226,7 @@ export default function TiaApa() {
         setMessages((prev) => [...prev, { role: 'ai', content: data.response }]);
         
         // Store query in CSV with correct type
-        await storeQueryInCSV(query, queryType, data.response, false, isVoiceQuery);
+        await storeQueryInCSV(query, queryType, data.response, false);
       } else {
         const errorMsg = detectedLanguage === 'bn' 
           ? 'দুঃখিত, এই মুহূর্তে উত্তর দিতে পারছি না।'
@@ -248,358 +242,7 @@ export default function TiaApa() {
     } finally {
       setIsLoading(false);
       setQuery('');
-      setIsVoiceQuery(false); // Reset voice query flag
       setShowSuggestions(false);
-    }
-  };
-
-  // Cleanup media recorder on unmount
-  useEffect(() => {
-    return () => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
-      }
-    };
-  }, []);
-
-  // Handle voice input with Deepgram (primary) and Whisper (fallback)
-  const handleVoiceInput = async () => {
-    if (!requireLogin()) return;
-    
-    // Check if we're currently recording
-    if (isRecording || isDeepgramRecording) {
-      // Stop Deepgram recording if active
-      if (isDeepgramRecording) {
-        console.log('Stopping Deepgram recording...');
-        stopDeepgramRecording();
-        
-        // Wait a moment for final transcripts, then use the result
-        setTimeout(() => {
-          const finalTranscript = (deepgramTranscript + ' ' + interimTranscript).trim();
-          console.log('Final transcript from Deepgram:', finalTranscript);
-          
-          if (finalTranscript) {
-            setQuery(finalTranscript);
-            if (deepgramLanguage) {
-              setDetectedLanguage(deepgramLanguage);
-            }
-            setIsVoiceQuery(true);
-            
-            // Focus on input so user can see and edit the transcribed text
-            setTimeout(() => {
-              if (inputRef.current) {
-                inputRef.current.focus();
-              }
-            }, 100);
-          } else {
-            console.log('No transcript received from Deepgram');
-            const errorMsg = detectedLanguage === 'bn' 
-              ? 'কোন কথা শোনা যায়নি। আবার চেষ্টা করুন।'
-              : 'No speech detected. Please try again.';
-            setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
-          }
-        }, 1000); // Wait 1 second for final transcripts
-        
-        return;
-      }
-      
-      // Stop legacy recording if active
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
-      }
-      
-      // Clear recording timer
-      if (recordingTimerRef.current) {
-        clearInterval(recordingTimerRef.current);
-        recordingTimerRef.current = null;
-      }
-      
-      setIsRecording(false);
-      setRecordingDuration(0);
-      return;
-    }
-
-    // Check for microphone support
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      const errorMsg = detectedLanguage === 'bn' 
-        ? 'আপনার ডিভাইস মাইক্রোফোন সাপোর্ট করে না।'
-        : 'Your device does not support microphone access.';
-      setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
-      return;
-    }
-
-    // Try Deepgram first, fallback to Whisper if it fails
-    try {
-      console.log('Starting Deepgram voice recording...');
-      setIsVoiceQuery(true);
-      setQuery(''); // Clear any existing query
-      resetDeepgramTranscript();
-      
-      // Show connecting status
-      setQuery(detectedLanguage === 'bn' ? '🔗 সংযোগ স্থাপন করা হচ্ছে...' : '🔗 Connecting...');
-      
-      await startDeepgramRecording();
-      
-      // Start recording timer for UI feedback
-      recordingTimerRef.current = setInterval(() => {
-        setRecordingDuration(prev => prev + 1);
-      }, 1000);
-      
-      // Update UI to show recording status
-      setQuery(detectedLanguage === 'bn' ? '🎤 রেকর্ডিং চলছে...' : '🎤 Recording...');
-      
-      console.log('Deepgram recording started successfully');
-      
-    } catch (error) {
-      console.warn('Deepgram failed, falling back to Whisper:', error);
-      
-      // Clear the connecting message
-      setQuery('');
-      
-      // Show Deepgram error as AI message if it's an API key issue
-      if (error.message && error.message.includes('API key')) {
-        const errorMsg = detectedLanguage === 'bn' 
-          ? 'Deepgram API key কনফিগার করা হয়নি। .env.local ফাইলে DEEPGRAM_API_KEY যোগ করুন। এখন Whisper ব্যবহার করা হচ্ছে।'
-          : 'Deepgram API key not configured. Add DEEPGRAM_API_KEY to .env.local. Using Whisper fallback.';
-        setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
-      }
-      
-      // Fallback to legacy Whisper system
-      await handleLegacyVoiceInput();
-    }
-  };
-
-  // Update the query display to show real-time transcription
-  useEffect(() => {
-    if (isDeepgramRecording && (interimTranscript || deepgramTranscript)) {
-      const currentTranscript = deepgramTranscript + (interimTranscript ? ' ' + interimTranscript : '');
-      if (currentTranscript.trim()) {
-        setQuery(currentTranscript);
-      }
-    }
-  }, [isDeepgramRecording, interimTranscript, deepgramTranscript]);
-
-  // Clear recording timer when Deepgram recording stops
-  useEffect(() => {
-    if (!isDeepgramRecording && recordingTimerRef.current) {
-      clearInterval(recordingTimerRef.current);
-      recordingTimerRef.current = null;
-      setRecordingDuration(0);
-    }
-  }, [isDeepgramRecording]);
-
-  // Legacy voice input with Whisper (fallback)
-  const handleLegacyVoiceInput = async () => {
-    try {
-      console.log('Starting legacy voice recording...');
-      setIsVoiceQuery(true);
-      setQuery(''); // Clear any existing query
-      
-      // Request microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 44100
-        } 
-      });
-
-      console.log('Microphone access granted');
-      
-      // Create MediaRecorder with best supported format for Whisper
-      let mimeType;
-      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-        mimeType = 'audio/webm;codecs=opus';
-      } else if (MediaRecorder.isTypeSupported('audio/webm')) {
-        mimeType = 'audio/webm';
-      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-        mimeType = 'audio/mp4';
-      } else if (MediaRecorder.isTypeSupported('audio/wav')) {
-        mimeType = 'audio/wav';
-      } else {
-        mimeType = ''; // Let browser choose
-      }
-      
-      console.log('Using MIME type:', mimeType);
-      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
-      const audioChunks = [];
-
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunks.push(event.data);
-        }
-      };
-
-      recorder.onstop = async () => {
-        console.log('Recording stopped, processing audio...');
-        
-        // Stop all tracks to release microphone
-        stream.getTracks().forEach(track => track.stop());
-        
-        if (audioChunks.length > 0) {
-          const audioBlob = new Blob(audioChunks, { type: mimeType });
-          console.log('Audio blob created, size:', audioBlob.size);
-          
-          // Process with Whisper
-          await processWithWhisper(audioBlob);
-        } else {
-          console.error('No audio data recorded');
-          const errorMsg = detectedLanguage === 'bn' 
-            ? 'কোন অডিও রেকর্ড হয়নি। আবার চেষ্টা করুন।'
-            : 'No audio recorded. Please try again.';
-          setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
-        }
-        
-        // Clear recording timer
-        if (recordingTimerRef.current) {
-          clearInterval(recordingTimerRef.current);
-          recordingTimerRef.current = null;
-        }
-        
-        setIsRecording(false);
-        setIsVoiceQuery(false);
-        setRecordingDuration(0);
-      };
-
-      recorder.onerror = (event) => {
-        console.error('Recording error:', event.error);
-        stream.getTracks().forEach(track => track.stop());
-        
-        // Clear recording timer
-        if (recordingTimerRef.current) {
-          clearInterval(recordingTimerRef.current);
-          recordingTimerRef.current = null;
-        }
-        
-        setIsRecording(false);
-        setIsVoiceQuery(false);
-        setRecordingDuration(0);
-        
-        const errorMsg = detectedLanguage === 'bn' 
-          ? 'রেকর্ডিং এ সমস্যা হয়েছে। আবার চেষ্টা করুন।'
-          : 'Recording failed. Please try again.';
-        setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
-      };
-
-      // Start recording
-      recorder.start();
-      mediaRecorderRef.current = recorder;
-      setIsRecording(true);
-      setRecordingDuration(0);
-      
-      console.log('Recording started successfully');
-      
-      // Start recording timer
-      recordingTimerRef.current = setInterval(() => {
-        setRecordingDuration(prev => prev + 1);
-      }, 1000);
-      
-      // Show recording status in query field
-      setQuery(detectedLanguage === 'bn' ? '🎤 রেকর্ডিং চলছে...' : '🎤 Recording...');
-
-    } catch (error) {
-      console.error('Voice input error:', error);
-      setIsRecording(false);
-      setIsVoiceQuery(false);
-      
-      let errorMsg;
-      if (error.name === 'NotAllowedError') {
-        errorMsg = detectedLanguage === 'bn' 
-          ? 'মাইক্রোফোন অনুমতি দিন। ব্রাউজার সেটিংস চেক করুন।'
-          : 'Microphone permission denied. Please check browser settings.';
-      } else if (error.name === 'NotFoundError') {
-        errorMsg = detectedLanguage === 'bn' 
-          ? 'কোন মাইক্রোফোন পাওয়া যায়নি।'
-          : 'No microphone found.';
-      } else {
-        errorMsg = detectedLanguage === 'bn' 
-          ? 'মাইক্রোফোন অ্যাক্সেস করতে পারছি না। আবার চেষ্টা করুন।'
-          : 'Cannot access microphone. Please try again.';
-      }
-      
-      setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
-    }
-  };
-
-  // Process audio with Whisper API for transcription
-  const processWithWhisper = async (audioBlob) => {
-    try {
-      console.log('Processing audio with Whisper API...');
-      setIsLoading(true);
-      
-      // Show processing status
-      setQuery(detectedLanguage === 'bn' ? '🎤 প্রসেসিং...' : '🎤 Processing...');
-      
-      const formData = new FormData();
-      formData.append('audio', audioBlob);
-      formData.append('language', detectedLanguage);
-
-      const response = await fetch('/api/voice', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('Whisper API response:', data);
-      
-      if (data.success && data.transcript && data.transcript.trim()) {
-        // Set the transcribed text in the query field
-        setQuery(data.transcript.trim());
-        
-        // Update detected language based on Whisper's analysis
-        if (data.detectedLanguage) {
-          setDetectedLanguage(data.detectedLanguage);
-        }
-        
-        console.log('Transcription successful:', data.transcript);
-        
-        // Focus on the input so user can see and edit the transcribed text
-        setTimeout(() => {
-          if (inputRef.current) {
-            inputRef.current.focus();
-          }
-        }, 100);
-        
-      } else {
-        console.error('Whisper transcription failed or empty:', data);
-        setQuery(''); // Clear the processing message
-        
-        const errorMsg = detectedLanguage === 'bn' 
-          ? 'কোন কথা শোনা যায়নি। আবার চেষ্টা করুন।'
-          : 'No speech detected. Please try again.';
-        setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
-      }
-    } catch (error) {
-      console.error('Whisper processing error:', error);
-      setQuery(''); // Clear the processing message
-      
-      const errorMsg = detectedLanguage === 'bn' 
-        ? 'ভয়েস প্রসেসিং এ সমস্যা হয়েছে। আবার চেষ্টা করুন।'
-        : 'Voice processing failed. Please try again.';
-      setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
-    } finally {
-      setIsLoading(false);
-      setIsVoiceQuery(false);
-    }
-  };
-
-  // Handle image upload
-  const handleImageUpload = (e) => {
-    if (!requireLogin()) return;
-
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUploadedImage(e.target.result); // Store the data URL, not the file
-        setImageQuery(''); // Clear any previous image query
-      };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -617,6 +260,21 @@ export default function TiaApa() {
   function renderImageQueryMessage(image, query) {
     return `<div style='display:flex;flex-direction:column;align-items:flex-end;'><img src='${image}' alt='Uploaded' style='max-width:180px;max-height:120px;border-radius:12px;margin-bottom:8px;'/><div>${query}</div></div>`;
   }
+
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    if (!requireLogin()) return;
+
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImage(e.target.result); // Store the data URL, not the file
+        setImageQuery(''); // Clear any previous image query
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Handle image analysis with Vision API
   const handleImageQuery = async () => {
@@ -678,7 +336,7 @@ export default function TiaApa() {
   };
 
   // Store query in CSV
-  const storeQueryInCSV = async (queryText, queryType, answer, hasImage = false, isVoice = false) => {
+  const storeQueryInCSV = async (queryText, queryType, answer, hasImage = false) => {
     if (!userData) {
       console.log('No userData available for storage');
       return;
@@ -691,8 +349,7 @@ export default function TiaApa() {
       queryType,
       query: queryText,
       answer,
-      hasImage,
-      isVoice
+      hasImage
     });
     
     try {
@@ -706,8 +363,7 @@ export default function TiaApa() {
           queryType,
           query: queryText,
           answer,
-          hasImage,
-          isVoice
+          hasImage
         })
       });
       
@@ -730,21 +386,6 @@ export default function TiaApa() {
     setTranscript('');
     setUploadedImage(null);
     setImageQuery('');
-    setIsVoiceQuery(false);
-    
-    // Stop any active voice recording
-    if (isRecording && mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop();
-    }
-    
-    // Clear recording timer
-    if (recordingTimerRef.current) {
-      clearInterval(recordingTimerRef.current);
-      recordingTimerRef.current = null;
-    }
-    
-    setIsRecording(false);
-    setRecordingDuration(0);
   };
 
   // Handle mobile keyboard visibility
@@ -929,18 +570,11 @@ export default function TiaApa() {
                   placeholder={
                     !isLoggedIn
                       ? "প্রশ্ন করার জন্য লগইন করুন"
-                      : isDeepgramRecording
-                      ? (deepgramTranscript || interimTranscript 
-                          ? `🎤 ${(deepgramTranscript + ' ' + interimTranscript).trim()}...` 
-                          : (detectedLanguage === 'bn' ? `🎤 কথা বলুন... ${recordingDuration}s` : `🎤 Speak now... ${recordingDuration}s`)
-                        )
-                      : isRecording
-                      ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
                       : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
                   }
                   className={`flex-1 min-w-0 px-4 py-3 bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 text-base ${
-                    isRecording ? 'placeholder-red-500' : ''
-                  } ${!isLoggedIn ? 'cursor-not-allowed' : ''}`}
+                    !isLoggedIn ? 'cursor-not-allowed' : ''
+                  }`}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e); }}
                   onFocus={() => setShowSuggestions(suggestions.length > 0)}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
@@ -962,30 +596,6 @@ export default function TiaApa() {
               
               {/* Mobile Bottom Row: Other Buttons */}
               <div className="flex items-center justify-center gap-3">
-                {/* Voice Button */}
-                <button
-                  type="button"
-                  onClick={handleVoiceInput}
-                  disabled={!isLoggedIn}
-                  className={`flex-shrink-0 w-12 h-12 rounded-full transition-colors flex items-center justify-center ${
-                    (isRecording || isDeepgramRecording)
-                      ? 'bg-red-500 text-white animate-pulse' 
-                      : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                  } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  title={
-                    (isRecording || isDeepgramRecording)
-                      ? (detectedLanguage === 'bn' ? 'রেকর্ডিং বন্ধ করুন' : 'Stop Recording')
-                      : (detectedLanguage === 'bn' ? 'ভয়েস রেকর্ডিং শুরু করুন' : 'Start Voice Recording')
-                  }
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                    <line x1="12" y1="19" x2="12" y2="23"/>
-                    <line x1="8" y1="23" x2="16" y2="23"/>
-                  </svg>
-                </button>
-                
                 {/* Language Toggle Button */}
                 <button
                   type="button"
@@ -1040,30 +650,6 @@ export default function TiaApa() {
             
             {/* Desktop: Single Row Layout */}
             <div className="hidden sm:flex items-center bg-gray-50 rounded-full border border-gray-200 p-1 sm:p-2 gap-1 sm:gap-2 w-full overflow-hidden">
-              {/* Voice Button */}
-              <button
-                type="button"
-                onClick={handleVoiceInput}
-                disabled={!isLoggedIn}
-                className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-colors flex items-center justify-center ${
-                  (isRecording || isDeepgramRecording)
-                    ? 'bg-red-500 text-white animate-pulse' 
-                    : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
-                title={
-                  (isRecording || isDeepgramRecording)
-                    ? (detectedLanguage === 'bn' ? 'রেকর্ডিং বন্ধ করুন' : 'Stop Recording')
-                    : (detectedLanguage === 'bn' ? 'ভয়েস রেকর্ডিং শুরু করুন' : 'Start Voice Recording')
-                }
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
-                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                  <line x1="12" y1="19" x2="12" y2="23"/>
-                  <line x1="8" y1="23" x2="16" y2="23"/>
-                </svg>
-              </button>
-              
               {/* Language Toggle Button */}
               <button
                 type="button"
@@ -1080,12 +666,12 @@ export default function TiaApa() {
                 title={detectedLanguage === 'bn' ? 'Switch to English' : 'Switch to Bengali'}
               >
                 <span className="text-xs sm:text-sm leading-none font-semibold">{detectedLanguage === 'bn' ? 'বাং' : 'EN'}</span>
-              </button>
+                  </button>
                   
-              {/* Text Input */}
-              <input
-                type="text"
-                value={query}
+                  {/* Text Input */}
+                  <input
+                    type="text"
+                    value={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
                 }}
@@ -1093,25 +679,18 @@ export default function TiaApa() {
                                      placeholder={
                     !isLoggedIn
                       ? "প্রশ্ন করার জন্য লগইন করুন"
-                      : isDeepgramRecording
-                      ? (deepgramTranscript || interimTranscript 
-                          ? `🎤 ${(deepgramTranscript + ' ' + interimTranscript).trim()}...` 
-                          : (detectedLanguage === 'bn' ? `🎤 কথা বলুন... ${recordingDuration}s` : `🎤 Speak now... ${recordingDuration}s`)
-                        )
-                      : isRecording
-                      ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
                       : (detectedLanguage === 'bn' ? "দয়া করে আপনার সমস্যা লিখুন" : "Please write your problem")
                   }
                 className={`flex-1 min-w-0 px-2 sm:px-4 py-2 sm:py-2.5 bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 text-xs sm:text-base ${
-                  isRecording ? 'placeholder-red-500' : ''
-                } ${!isLoggedIn ? 'cursor-not-allowed' : ''}`}
+                  !isLoggedIn ? 'cursor-not-allowed' : ''
+                }`}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e); }}
                 onFocus={() => setShowSuggestions(suggestions.length > 0)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 ref={inputRef}
-              />
+                  />
                   
-                                {/* Image Upload Button */}
+                  {/* Image Upload Button */}
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -1154,20 +733,20 @@ export default function TiaApa() {
                       <polygon points="22,2 15,22 11,13 2,9 22,2"/>
                     </svg>
                   </button>
-            </div>
-            
-            {/* Hidden file input */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageUpload}
-              accept="image/*"
-              className="hidden"
-            />
-          </form>
-          
-          {/* Uploaded Image Preview */}
-          {uploadedImage && (
+                </div>
+                
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+              </form>
+              
+              {/* Uploaded Image Preview */}
+              {uploadedImage && (
             <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-pink-50 rounded-lg border border-pink-200">
               <Image 
                 src={uploadedImage} 
@@ -1176,16 +755,16 @@ export default function TiaApa() {
                 className="max-w-full max-h-24 sm:max-h-32 mx-auto rounded-lg mb-2 border border-gray-200" 
                 unoptimized={true}
               />
-              <input
-                type="text"
-                value={imageQuery}
-                onChange={(e) => setImageQuery(e.target.value)}
+                  <input
+                    type="text"
+                    value={imageQuery}
+                    onChange={(e) => setImageQuery(e.target.value)}
                 placeholder={detectedLanguage === 'bn' ? "ছবি সম্পর্কে আপনার প্রশ্ন লিখুন..." : "Write your question about the image..."}
                 className="w-full p-2 border border-pink-300 rounded-lg text-black text-sm"
-              />
-              <button
-                onClick={handleImageQuery}
-                disabled={isLoading}
+                  />
+                  <button
+                    onClick={handleImageQuery}
+                    disabled={isLoading}
                 className="mt-2 w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 disabled:opacity-50 text-sm"
               >
                 {detectedLanguage === 'bn' ? 'ছবি বিশ্লেষণ করুন' : 'Analyze Image'}
@@ -1215,7 +794,7 @@ export default function TiaApa() {
             </div>
           )}
         </div>
-      </div>
+        </div>
     </div>
   );
 }

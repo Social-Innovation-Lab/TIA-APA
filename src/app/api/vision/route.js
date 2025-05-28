@@ -66,21 +66,21 @@ export async function POST(request) {
       // Use GPT-4o Vision with Assistant approach
       const completion = await openai.chat.completions.create({
         model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
+      messages: [
+        {
+          role: "system",
             content: `You are Tia Apa (টিয়া আপা), an expert AI assistant for Bangladeshi farmers specializing in image analysis.\n\n${languageInstruction}\n\nYour task:\n1. Analyze the agricultural image thoroughly\n2. Identify any crops, diseases, pests, or problems visible\n3. Search through the provided agriculture database for relevant solutions\n4. Provide practical, specific advice\n\nIMPORTANT GUIDELINES:\n- NEVER mention "Entry", "CSV file names", or "database" in your responses\n- DO NOT reference which file or entry the information comes from\n- Present solutions in a clean, organized manner\n- Focus on practical, actionable advice\n- Use natural language as if you're directly advising the farmer\n- Combine similar treatments into coherent advice\n\nHere is the agriculture database:\n\n${csvData}\n\nRespond in a helpful manner suitable for Bangladeshi farmers.`
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
                 text: `Please analyze this agricultural image and provide detailed advice. \n\nUser's question: ${query || 'এই ছবিটি বিশ্লেষণ করুন এবং কৃষি সংক্রান্ত পরামর্শ দিন।'}\n\nSteps:\n1. Describe what you see in the image\n2. Identify any problems, diseases, or pests\n3. Search the database for relevant solutions\n4. Provide specific treatment recommendations\n5. Include prevention measures if applicable`
-              },
-              {
-                type: "image_url",
-                image_url: {
+            },
+            {
+              type: "image_url",
+              image_url: {
                   url: image
                 }
               }
@@ -124,14 +124,14 @@ export async function POST(request) {
                   type: "image_url",
                   image_url: {
                     url: image
-                  }
-                }
-              ]
+              }
             }
-          ],
+          ]
+        }
+      ],
           max_tokens: 800,
           temperature: 0.3
-        });
+    });
         
         finalResponse = fallbackCompletion.choices[0].message.content;
         source = 'gpt4o_vision_fallback';
