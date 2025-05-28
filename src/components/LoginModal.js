@@ -108,7 +108,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
                 type="text"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="Enter any text (name, phone, email, etc.)"
+                placeholder="ফোন নম্বর বা, ইমেইল/Phone No. or Email"
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-gray-700 text-sm font-medium"
               />
