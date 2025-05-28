@@ -4,9 +4,36 @@ import Papa from 'papaparse';
 import fs from 'fs';
 import path from 'path';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'your_openai_api_key_here'
-});
+// Initialize AI client based on available API keys
+function initializeAIClient() {
+  const openaiKey = process.env.OPENAI_API_KEY;
+  const deepseekKey = process.env.DEEPSEEK_API_KEY;
+  
+  if (deepseekKey && deepseekKey !== 'your_deepseek_api_key_here') {
+    console.log('Using DeepSeek API for AI responses');
+    return {
+      client: new OpenAI({
+        apiKey: deepseekKey,
+        baseURL: 'https://api.deepseek.com'
+      }),
+      model: 'deepseek-chat',
+      provider: 'deepseek'
+    };
+  } else if (openaiKey && openaiKey !== 'your_openai_api_key_here') {
+    console.log('Using OpenAI API for AI responses');
+    return {
+      client: new OpenAI({
+        apiKey: openaiKey
+      }),
+      model: 'gpt-4o',
+      provider: 'openai'
+    };
+  } else {
+    throw new Error('No valid AI API key found. Please add OPENAI_API_KEY or DEEPSEEK_API_KEY to .env.local');
+  }
+}
+
+const aiConfig = initializeAIClient();
 
 // Load CSV data and format for AI assistant
 async function loadAndFormatCSVData() {
@@ -46,12 +73,12 @@ async function loadAndFormatCSVData() {
 async function getOrCreateAssistant() {
   try {
     // Try to find existing assistant
-    const assistants = await openai.beta.assistants.list();
+    const assistants = await aiConfig.client.beta.assistants.list();
     let assistant = assistants.data.find(a => a.name === 'Tia Apa Agriculture Assistant');
     
     if (!assistant) {
       // Create new assistant
-      assistant = await openai.beta.assistants.create({
+      assistant = await aiConfig.client.beta.assistants.create({
         name: 'Tia Apa Agriculture Assistant',
         instructions: `You are Tia Apa (টিয়া আপা), an expert AI assistant for Bangladeshi farmers. 
 
@@ -81,7 +108,7 @@ Example responses:
 2. **পোকামাকড়:** নিম তেল বা সাবান পানির মিশ্রণ স্প্রে করুন।"
 
 Always provide practical, specific advice without mentioning data sources.`,
-        model: 'gpt-4o',
+        model: aiConfig.model,
         tools: []
       });
     }
@@ -99,24 +126,24 @@ async function searchWithAssistant(query, csvData) {
     const assistant = await getOrCreateAssistant();
     
     // Create a thread
-    const thread = await openai.beta.threads.create();
+    const thread = await aiConfig.client.beta.threads.create();
     
     // Add the CSV data and user query to the thread
-    await openai.beta.threads.messages.create(thread.id, {
+    await aiConfig.client.beta.threads.messages.create(thread.id, {
       role: 'user',
       content: `Here is some agricultural reference information:\n\n${csvData}\n\nUser Query: "${query}"\n\nPlease provide the most relevant and accurate answer to the user's query. If you find matching information, use it. If not, provide general agricultural advice based on your knowledge. Respond in a helpful, practical manner suitable for Bangladeshi farmers. Do NOT mention any database, file, or entry in your answer.`
     });
     
     // Run the assistant
-    const run = await openai.beta.threads.runs.create(thread.id, {
+    const run = await aiConfig.client.beta.threads.runs.create(thread.id, {
       assistant_id: assistant.id
     });
     
     // Wait for completion
-    let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
+    let runStatus = await aiConfig.client.beta.threads.runs.retrieve(thread.id, run.id);
     while (runStatus.status !== 'completed' && runStatus.status !== 'failed') {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
+      runStatus = await aiConfig.client.beta.threads.runs.retrieve(thread.id, run.id);
     }
     
     if (runStatus.status === 'failed') {
@@ -124,11 +151,11 @@ async function searchWithAssistant(query, csvData) {
     }
     
     // Get the response
-    const messages = await openai.beta.threads.messages.list(thread.id);
+    const messages = await aiConfig.client.beta.threads.messages.list(thread.id);
     const assistantMessage = messages.data.find(msg => msg.role === 'assistant');
     
     // Clean up thread
-    await openai.beta.threads.del(thread.id);
+    await aiConfig.client.beta.threads.del(thread.id);
     
     return assistantMessage?.content[0]?.text?.value || 'দুঃখিত, এই মুহূর্তে উত্তর দিতে পারছি না।';
     
@@ -141,8 +168,8 @@ async function searchWithAssistant(query, csvData) {
 // Fallback search using direct GPT-4o
 async function fallbackSearch(query) {
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+    const completion = await aiConfig.client.chat.completions.create({
+      model: aiConfig.model,
       messages: [
         {
           role: "system",

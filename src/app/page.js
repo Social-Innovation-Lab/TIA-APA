@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import LoginModal from '../components/LoginModal';
 import Image from 'next/image';
-import { useDeepgramVoice } from '../hooks/useDeepgramVoice';
 
 export default function TiaApa() {
   const [query, setQuery] = useState('');
@@ -31,21 +30,6 @@ export default function TiaApa() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
-
-  // Deepgram voice recognition hook
-  const {
-    isRecording: isDeepgramRecording,
-    transcript: deepgramTranscript,
-    interimTranscript,
-    isConnected: isDeepgramConnected,
-    detectedLanguage: deepgramLanguage,
-    confidence: deepgramConfidence,
-    error: deepgramError,
-    startRecording: startDeepgramRecording,
-    stopRecording: stopDeepgramRecording,
-    resetTranscript: resetDeepgramTranscript,
-    cleanup: cleanupDeepgram
-  } = useDeepgramVoice();
 
   // Check for existing session on component mount
   useEffect(() => {
@@ -286,17 +270,36 @@ export default function TiaApa() {
     if (isRecording || isDeepgramRecording) {
       // Stop Deepgram recording if active
       if (isDeepgramRecording) {
+        console.log('Stopping Deepgram recording...');
         stopDeepgramRecording();
         
-        // Use the final transcript from Deepgram
-        const finalTranscript = (deepgramTranscript + ' ' + interimTranscript).trim();
-        if (finalTranscript) {
-          setQuery(finalTranscript);
-          if (deepgramLanguage) {
-            setDetectedLanguage(deepgramLanguage);
+        // Wait a moment for final transcripts, then use the result
+        setTimeout(() => {
+          const finalTranscript = (deepgramTranscript + ' ' + interimTranscript).trim();
+          console.log('Final transcript from Deepgram:', finalTranscript);
+          
+          if (finalTranscript) {
+            setQuery(finalTranscript);
+            if (deepgramLanguage) {
+              setDetectedLanguage(deepgramLanguage);
+            }
+            setIsVoiceQuery(true);
+            
+            // Focus on input so user can see and edit the transcribed text
+            setTimeout(() => {
+              if (inputRef.current) {
+                inputRef.current.focus();
+              }
+            }, 100);
+          } else {
+            console.log('No transcript received from Deepgram');
+            const errorMsg = detectedLanguage === 'bn' 
+              ? 'কোন কথা শোনা যায়নি। আবার চেষ্টা করুন।'
+              : 'No speech detected. Please try again.';
+            setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
           }
-        }
-        setIsVoiceQuery(true);
+        }, 1000); // Wait 1 second for final transcripts
+        
         return;
       }
       
@@ -332,6 +335,9 @@ export default function TiaApa() {
       setQuery(''); // Clear any existing query
       resetDeepgramTranscript();
       
+      // Show connecting status
+      setQuery(detectedLanguage === 'bn' ? '🔗 সংযোগ স্থাপন করা হচ্ছে...' : '🔗 Connecting...');
+      
       await startDeepgramRecording();
       
       // Start recording timer for UI feedback
@@ -339,15 +345,48 @@ export default function TiaApa() {
         setRecordingDuration(prev => prev + 1);
       }, 1000);
       
+      // Update UI to show recording status
+      setQuery(detectedLanguage === 'bn' ? '🎤 রেকর্ডিং চলছে...' : '🎤 Recording...');
+      
       console.log('Deepgram recording started successfully');
       
     } catch (error) {
       console.warn('Deepgram failed, falling back to Whisper:', error);
       
+      // Clear the connecting message
+      setQuery('');
+      
+      // Show Deepgram error as AI message if it's an API key issue
+      if (error.message && error.message.includes('API key')) {
+        const errorMsg = detectedLanguage === 'bn' 
+          ? 'Deepgram API key কনফিগার করা হয়নি। .env.local ফাইলে DEEPGRAM_API_KEY যোগ করুন। এখন Whisper ব্যবহার করা হচ্ছে।'
+          : 'Deepgram API key not configured. Add DEEPGRAM_API_KEY to .env.local. Using Whisper fallback.';
+        setMessages((prev) => [...prev, { role: 'ai', content: errorMsg }]);
+      }
+      
       // Fallback to legacy Whisper system
       await handleLegacyVoiceInput();
     }
   };
+
+  // Update the query display to show real-time transcription
+  useEffect(() => {
+    if (isDeepgramRecording && (interimTranscript || deepgramTranscript)) {
+      const currentTranscript = deepgramTranscript + (interimTranscript ? ' ' + interimTranscript : '');
+      if (currentTranscript.trim()) {
+        setQuery(currentTranscript);
+      }
+    }
+  }, [isDeepgramRecording, interimTranscript, deepgramTranscript]);
+
+  // Clear recording timer when Deepgram recording stops
+  useEffect(() => {
+    if (!isDeepgramRecording && recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+      setRecordingDuration(0);
+    }
+  }, [isDeepgramRecording]);
 
   // Legacy voice input with Whisper (fallback)
   const handleLegacyVoiceInput = async () => {
@@ -726,20 +765,6 @@ export default function TiaApa() {
     };
   }, []);
 
-  // Cleanup Deepgram on unmount
-  useEffect(() => {
-    return () => {
-      cleanupDeepgram();
-    };
-  }, [cleanupDeepgram]);
-
-  // Handle Deepgram errors
-  useEffect(() => {
-    if (deepgramError) {
-      setMessages((prev) => [...prev, { role: 'ai', content: deepgramError }]);
-    }
-  }, [deepgramError]);
-
   return (
     <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* Login Modal */}
@@ -905,9 +930,9 @@ export default function TiaApa() {
                     !isLoggedIn
                       ? "প্রশ্ন করার জন্য লগইন করুন"
                       : isDeepgramRecording
-                      ? (interimTranscript 
-                          ? `🎤 ${interimTranscript}...` 
-                          : (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
+                      ? (deepgramTranscript || interimTranscript 
+                          ? `🎤 ${(deepgramTranscript + ' ' + interimTranscript).trim()}...` 
+                          : (detectedLanguage === 'bn' ? `🎤 কথা বলুন... ${recordingDuration}s` : `🎤 Speak now... ${recordingDuration}s`)
                         )
                       : isRecording
                       ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
@@ -1069,9 +1094,9 @@ export default function TiaApa() {
                     !isLoggedIn
                       ? "প্রশ্ন করার জন্য লগইন করুন"
                       : isDeepgramRecording
-                      ? (interimTranscript 
-                          ? `🎤 ${interimTranscript}...` 
-                          : (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
+                      ? (deepgramTranscript || interimTranscript 
+                          ? `🎤 ${(deepgramTranscript + ' ' + interimTranscript).trim()}...` 
+                          : (detectedLanguage === 'bn' ? `🎤 কথা বলুন... ${recordingDuration}s` : `🎤 Speak now... ${recordingDuration}s`)
                         )
                       : isRecording
                       ? (detectedLanguage === 'bn' ? `🎤 রেকর্ডিং চলছে... ${recordingDuration}s` : `🎤 Recording... ${recordingDuration}s`)
