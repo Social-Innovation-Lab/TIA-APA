@@ -33,13 +33,13 @@ function initializeCSV() {
 
 // Validate user credentials
 function validateCredentials(email, clinicName) {
-  // Basic validation
+  // Basic validation - just check if fields are not empty
   if (!email || !email.trim()) return false;
   if (!clinicName || !clinicName.trim()) return false;
   
-  // Email format validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email.trim())) return false;
+  // Remove strict email validation - accept any text
+  // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // if (!emailRegex.test(email.trim())) return false;
   
   return true;
 }
@@ -56,7 +56,7 @@ export async function POST(request) {
       console.log('Validation failed');
       return NextResponse.json({ 
         success: false, 
-        error: 'সকল তথ্য সঠিকভাবে পূরণ করুন। ইমেইল ঠিকানা বৈধ হতে হবে।' 
+        error: 'সকল তথ্য সঠিকভাবে পূরণ করুন।' 
       }, { status: 400 });
     }
 
