@@ -1,0 +1,1317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="1Hgyr6CW04d_J1NffcAaF-tcxbJBWCtUE">
+	<name>Bangladesh - Ponds.kml</name>
+	<gx:CascadingStyle kml:id="__managed_style_2BA837D4163D61C9E70E">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>1.5</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>00ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0F37795DF03D61C9E70E">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1E4B2FFF563D61C9E70E</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2BA837D4163D61C9E70E</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_28A20E751F3D61C9E70B">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>0.75</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_4AF8FC3AD43D61C9E70B">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_1D1E4B193F3D61C9E70B">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>0.5</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_31F8A7B5DE3D61C9E70B">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_4AF8FC3AD43D61C9E70B</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_5CF368D7783D61C9E70B</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_207DA81A3A3D61C9E708">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_04AC2DDD5C3D61C9E709">
+		<Style>
+			<IconStyle>
+				<scale>1.32</scale>
+				<Icon>
+					<href>data:image/png;base64,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</href>
+				</Icon>
+				<hotSpot x="20" y="62" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_050DBE93B83D61C9E70B">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1D1E4B193F3D61C9E70B</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_28A20E751F3D61C9E70B</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_46C30903A93D61C9E708">
+		<Style>
+			<IconStyle>
+				<scale>1.1</scale>
+				<Icon>
+					<href>data:image/png;base64,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</href>
+				</Icon>
+				<hotSpot x="20" y="62" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_1E4B2FFF563D61C9E70E">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+			</LineStyle>
+			<PolyStyle>
+				<color>00ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_5CF368D7783D61C9E70B">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>1.5</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_33AD2D4E1D3D61C9E708">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_46C30903A93D61C9E708</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_04AC2DDD5C3D61C9E709</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_15927BF4B23D61C9E708">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_09C00E9B573D61C9E708">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_15927BF4B23D61C9E708</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_207DA81A3A3D61C9E708</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Folder id="5942C52A40000001">
+		<name>Bangladesh - Ponds</name>
+		<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+		<Folder id="01ACC1F1F03CF7EA9119">
+			<name>Kamal Talukder</name>
+			<visibility>0</visibility>
+			<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+			<Placemark id="5942C52A40000003">
+				<name>Kamal Talukder -P1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16666001129727,21.93025118228915,0 90.16667090848186,21.93038627503485,0 90.16665854381824,21.93043463122331,0 90.16662415231455,21.93048757019912,0 90.16650198373367,21.93048413368513,0 90.1664760684382,21.93046523066781,0 90.16645794625956,21.9303727227861,0 90.16648120536328,21.9302431559993,0 90.16666001129727,21.93025118228915,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB95000004">
+				<name>Kamal Talukder - F1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16648406909039,21.93004399635424,0 90.16651504668462,21.92967738404583,0 90.16659243076242,21.92911925781181,0 90.16660730335801,21.92898726114896,0 90.16677738016377,21.92900949235416,0 90.16676804660389,21.92916297729009,0 90.16669922461413,21.92969237367581,0 90.16666339559882,21.93005664451477,0 90.16648406909039,21.93004399635424,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+		</Folder>
+		<Folder id="0571E8AC443CF7F0CB2B">
+			<name>Suvo Mistry</name>
+			<visibility>0</visibility>
+			<open>1</open>
+			<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+			<Placemark id="5942C52A40000004">
+				<name>Shuvo Mistry - P1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.17621762333994,21.96898159873385,0 90.17612908056594,21.9687655389137,0 90.17621090468619,21.96872027992875,0 90.17621514061264,21.96872047120959,0 90.17622054899078,21.96872177197882,0 90.17622596644199,21.96872307492037,0 90.17623032958599,21.96872433173679,0 90.17623682833226,21.96872568730678,0 90.17624002348384,21.96872583272252,0 90.17624974025911,21.96872733719348,0 90.17625627232287,21.96872869875007,0 90.17626174597565,21.96873001380127,0 90.17627057487277,21.96873255197102,0 90.17627956420965,21.96873617462688,0 90.17635636830862,21.96890895428873,0 90.17621762333994,21.96898159873385,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB9500000A">
+				<name>Shuvo Mistry - F1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.17641879843885,21.96891498017107,0 90.17631480491769,21.96870161605001,0 90.17639623249984,21.96866792546303,0 90.17639377788937,21.96866580883562,0 90.17639010440945,21.96866264114589,0 90.17638587389368,21.96865637311229,0 90.17638222584932,21.9686532309662,0 90.17637783759005,21.96864515041224,0 90.17637355574006,21.96863720582592,0 90.17636317045486,21.96862238965151,0 90.17636038063661,21.9686174644012,0 90.1763526547826,21.96860666265632,0 90.17638028411567,21.96857749301774,0 90.1763824499774,21.96857847445839,0 90.17638593763957,21.96858137464636,0 90.17639176886067,21.96858622365961,0 90.17639645058516,21.96859011670479,0 90.17640637673045,21.96859506852396,0 90.17641329777324,21.96859998982442,0 90.17648026789348,21.96856094530066,0 90.17665509103321,21.96881846979811,0 90.17641879843885,21.96891498017107,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB9500000B">
+				<name>Shuvo Mistry - F2</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.17671616879406,21.96878351840551,0 90.17653433935416,21.96851163546836,0 90.17670156912395,21.96844094384757,0 90.17684588276266,21.96836233584892,0 90.1769942853827,21.96861752008597,0 90.17671616879406,21.96878351840551,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+		</Folder>
+		<Folder id="0C5E042D1E3CF7F76990">
+			<name>Musa</name>
+			<visibility>0</visibility>
+			<open>1</open>
+			<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+			<Placemark id="5942C52A40000005">
+				<name>Musa Hawlader - P1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.17694722916218,21.97137487696322,0 90.17684448294705,21.97121812729359,0 90.17703177939651,21.97106424859374,0 90.17714557905732,21.97118900494534,0 90.17694722916218,21.97137487696322,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C52A40000006">
+				<name>Musa Hawlader - P2</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.17756714567102,21.97096867515143,0 90.17749289464047,21.97085804048519,0 90.1775983235575,21.97079545111708,0 90.1776782786022,21.97090757229184,0 90.17756714567102,21.97096867515143,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB9500000C">
+				<name>Musa Hawlader - F1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.17770963259321,21.9708970246805,0 90.17759547110967,21.97075102044234,0 90.17757372509011,21.97074771407307,0 90.17750952832213,21.97067209941466,0 90.17780910099137,21.97045141069896,0 90.17784142408765,21.97050173239912,0 90.17787413377829,21.97060892918477,0 90.17788737420463,21.9707842271058,0 90.17770963259321,21.9708970246805,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB9500000D">
+				<name>Musa Hawlader - F2</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.17797301182172,21.97071869816412,0 90.1779425238602,21.97055862271806,0 90.17788731528593,21.97044719118504,0 90.17889683349759,21.96971463630281,0 90.17898006178046,21.96981758610665,0 90.17907421437187,21.96992779464316,0 90.17797301182172,21.97071869816412,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+		</Folder>
+		<Folder id="0912D5D3733CF7A3FE80">
+			<name>Ganesh Mondal</name>
+			<visibility>0</visibility>
+			<open>1</open>
+			<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+			<Placemark id="5942C52A40000002">
+				<name>Ganesh Mondal - P1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16650128041103,21.94911537812373,0 90.16656463194781,21.94906389823883,0 90.16662220798982,21.94923019504493,0 90.16647221058668,21.94935306373684,0 90.16643633489586,21.94929425876376,0 90.16648867632713,21.94926447045759,0 90.16646410768897,21.94920314993248,0 90.16650128041103,21.94911537812373,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB95000003">
+				<name>Ganesh Mondal - F1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16521057864593,21.9453670130749,0 90.16545155781797,21.94536545625941,0 90.16549274056906,21.945535382079,0 90.16532800322474,21.94559540099534,0 90.16521057864593,21.9453670130749,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+		</Folder>
+		<Folder id="0CE3F742043CF7FFA4FB">
+			<name>Ujjal Mrida</name>
+			<visibility>0</visibility>
+			<open>1</open>
+			<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+			<Placemark id="5942C52A40000007">
+				<name>Ujjal Mridha - P1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.1806450110787,21.96973547465345,0 90.18061086011718,21.96974473626114,0 90.18056450642199,21.96972486964192,0 90.18056438373992,21.96971985425008,0 90.18056428595698,21.96971585565684,0 90.18056215083146,21.9697108918553,0 90.18056002265735,21.96970593929032,0 90.18055692274486,21.96970201565259,0 90.18055385267115,21.96969909362645,0 90.18055076930203,21.96969518952719,0 90.18054667791316,21.96969032950379,0 90.18054162034463,21.96968648484941,0 90.18053757251272,21.96968263359063,0 90.18053353593133,21.9696787930019,0 90.18053152182449,21.96967687670226,0 90.18063478272852,21.96958219988092,0 90.1807079728616,21.96963517347587,0 90.18068810892406,21.96968567363182,0 90.1806450110787,21.96973547465345,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C52A40000008">
+				<name>Ujjal Mridha - P2</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.18037254300994,21.96990390826537,0 90.18037265721227,21.96990155820778,0 90.18037077303057,21.96989571728015,0 90.18036685178896,21.96988759258399,0 90.18036289394287,21.96988067087058,0 90.18035585955172,21.96987150321379,0 90.18035289676895,21.96986694076875,0 90.18034486475914,21.96985787286651,0 90.18033207673001,21.96984102857696,0 90.18032828218826,21.96983433336919,0 90.18032353276864,21.9698265523881,0 90.18032181054259,21.96982102673058,0 90.18039634138385,21.96977451110513,0 90.18045109729186,21.96983127230974,0 90.18037254300994,21.96990390826537,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB9500000E">
+				<name>Ujjal Mridha - F1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.17986674335015,21.97052734634855,0 90.17969270008319,21.97024813767487,0 90.17996604778078,21.97004115868125,0 90.18004679464789,21.96998696932238,0 90.18024671713925,21.96983635011808,0 90.18034778853915,21.96994666707002,0 90.18044526095861,21.96988965570271,0 90.18048965951851,21.96994394067147,0 90.18048581775281,21.96995439081105,0 90.18053532507345,21.97000900911548,0 90.17986674335015,21.97052734634855,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+		</Folder>
+	</Folder>
+	<Folder id="5942C5FB95000001">
+		<name>Bangladesh_Farmland.kml</name>
+		<open>1</open>
+		<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+		<Folder id="5942C5FB95000002">
+			<name>Bangladesh_Farmland</name>
+			<open>1</open>
+			<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+			<Folder id="09540326693CF7B01B01">
+				<name>Nipu chandra Howlader</name>
+				<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+				<Placemark id="0B8DF9411C3C6634AC57">
+					<name>Nipu Chandra Hawlader</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>90.19959986806933</longitude>
+						<latitude>21.96800723282194</latitude>
+						<altitude>4.417918116327344</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>34.99999999997917</gx:fovy>
+						<range>206.3787682576368</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									90.19909889576851,21.96786300969087,0 90.19907116069879,21.96772236017012,0 90.19926934628026,21.96767810017723,0 90.19927622270058,21.96766573113516,0 90.19927783357545,21.9676516216467,0 90.19949543137315,21.96764964852009,0 90.1995251581948,21.96770113509826,0 90.19949007165197,21.96771190352105,0 90.19947774498128,21.96774531423076,0 90.1994543079592,21.96785373589536,0 90.19941824958555,21.96783515851288,0 90.19937407853385,21.9678196195757,0 90.19933198939592,21.96781279651811,0 90.19928707072123,21.96781292333597,0 90.19909889576851,21.96786300969087,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+			</Folder>
+			<Placemark id="5942C5FB95000005">
+				<name>Jakir Hossain - F1</name>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16520278704816,21.92855989521631,0 90.16517597696935,21.92846288825825,0 90.165230748789,21.92845143312635,0 90.1652274807291,21.92832897452065,0 90.16523877384954,21.92818576399018,0 90.16522404713737,21.92807907942845,0 90.16547099465012,21.92806751452962,0 90.16547961984844,21.92811908022592,0 90.16543330015676,21.92829533032254,0 90.16540653637284,21.92842320410249,0 90.16540226869512,21.92845578937646,0 90.16537744507868,21.92853282847929,0 90.16520278704816,21.92855989521631,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB95000006">
+				<name>Roktim Molla -F1</name>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16787191512903,21.94554036900879,0 90.16787545949583,21.94546438607845,0 90.16787433681253,21.94546322452556,0 90.16787317108997,21.94545854096916,0 90.16787199473632,21.94545270252501,0 90.16786973454931,21.94544806552321,0 90.16786528023695,21.94544347191843,0 90.16787184678275,21.94535211005098,0 90.16787516671347,21.94528373200295,0 90.16808720004829,21.94528812287908,0 90.1680869481804,21.94553519617251,0 90.16787191512903,21.94554036900879,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB95000007">
+				<name>Milon Roy - F1</name>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16755550068915,21.94538553616432,0 90.16754827031296,21.94523966586139,0 90.16770869953267,21.94523661156354,0 90.16770612924353,21.94530155409573,0 90.16768828975044,21.94537380156547,0 90.16755550068915,21.94538553616432,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB95000008">
+				<name>Md. Ismail Hawlader - F1</name>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16727526041396,21.94725341273594,0 90.16728486690049,21.94758196295331,0 90.16724688824949,21.94762759346204,0 90.16706917198155,21.9476647956381,0 90.16694561811593,21.94731658441063,0 90.16727526041396,21.94725341273594,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB95000009">
+				<name>Obaidul Islam - F1</name>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.18478122190805,21.95620466112342,0 90.18472130436552,21.95625201655137,0 90.18463079335679,21.95626324660324,0 90.18460825640393,21.95622932235257,0 90.18454564242309,21.95609216498446,0 90.1844750865489,21.95592608151011,0 90.18434644597288,21.95564151221595,0 90.18423743692621,21.95539048861246,0 90.18414162535728,21.95516501177894,0 90.18431361871708,21.95510511870743,0 90.18460060279247,21.95572272251897,0 90.18478689720037,21.9561442700347,0 90.18478122190805,21.95620466112342,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB9500000F">
+				<name>Md Mostofa Hawlader - F1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16057650005035,21.93087823570088,0 90.16059249167438,21.93071663130461,0 90.1606890002294,21.93070904323552,0 90.16072637786043,21.93066371049659,0 90.1617288318612,21.93062911520498,0 90.16176627984751,21.93081089495659,0 90.16057650005035,21.93087823570088,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB95000010">
+				<name>Md Kholil Hawlader - F1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.16055364281496,21.93088486008385,0 90.16173815502567,21.9308151856254,0 90.16173963232325,21.93098683730462,0 90.16087898288104,21.93100328487386,0 90.16088337662562,21.93110114932269,0 90.16055707245269,21.93110989988272,0 90.16055364281496,21.93088486008385,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="5942C5FB95000011">
+				<name>Afzal Hossain Dhali - F1</name>
+				<visibility>0</visibility>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.1519593603316,21.91039824817835,0 90.15189641215525,21.91014966605297,0 90.15185065062022,21.90998896437945,0 90.1519706495387,21.90995503571637,0 90.15201173970893,21.91011641430693,0 90.15208334953803,21.91036217352655,0 90.1519593603316,21.91039824817835,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="07F9AC1F233C661F9416">
+				<name>Shukhranjan Das - F1</name>
+				<visibility>0</visibility>
+				<LookAt>
+					<longitude>90.17194990184359</longitude>
+					<latitude>21.94678352457125</latitude>
+					<altitude>4.720929277496579</altitude>
+					<heading>0</heading>
+					<tilt>0</tilt>
+					<gx:fovy>34.99993237757757</gx:fovy>
+					<range>124.5996567710063</range>
+					<altitudeMode>absolute</altitudeMode>
+				</LookAt>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.1721780304826,21.94684279828815,0 90.17217320975891,21.94679363186868,0 90.17217565415282,21.94675847795616,0 90.17218045272445,21.9467071587685,0 90.17218267772435,21.94669736971838,0 90.17226123866807,21.94670886905727,0 90.17228906127069,21.94671270657036,0 90.17228731925624,21.94679372005874,0 90.17228163651427,21.9468621421294,0 90.1721780304826,21.94684279828815,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark id="0CA86C317A3C6630A4CB">
+				<name>Imran Talukder -F1</name>
+				<visibility>0</visibility>
+				<LookAt>
+					<longitude>90.17782503549005</longitude>
+					<latitude>21.94487949502815</latitude>
+					<altitude>3.352686525569231</altitude>
+					<heading>42.01989468864632</heading>
+					<tilt>0</tilt>
+					<gx:fovy>34.99993237757757</gx:fovy>
+					<range>125.1942085497831</range>
+					<altitudeMode>absolute</altitudeMode>
+				</LookAt>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.17755440436633,21.94471546255776,0 90.177913178666,21.9446987290673,0 90.17790062990645,21.94483358660708,0 90.17791874040783,21.94483402678209,0 90.17792893967395,21.94505286879063,0 90.17755631582332,21.94505593487531,0 90.17755440436633,21.94471546255776,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Folder id="03F99B4A083CEC5C07A0">
+				<name>Rampal Farmland - 20260113 Saadman</name>
+				<open>1</open>
+				<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+				<Placemark id="0EB08EC78A3CEC2C2A31">
+					<name>Suchitra Rani Pal - J1</name>
+					<LookAt>
+						<longitude>89.65771277700232</longitude>
+						<latitude>22.63077780449238</latitude>
+						<altitude>4.898076621461669</altitude>
+						<heading>359.9999728743551</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>259.5898081573978</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_050DBE93B83D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65701425099533,22.63046997399469,0 89.65727832144881,22.63052475020385,0 89.65725932452783,22.63062186149943,0 89.65698488488577,22.63056542743704,0 89.65701425099533,22.63046997399469,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0014DD2CE13CEC2CB744">
+					<name>Firoz Kabir - J1</name>
+					<LookAt>
+						<longitude>89.65771277700232</longitude>
+						<latitude>22.63077780449238</latitude>
+						<altitude>4.898076621461669</altitude>
+						<heading>359.9999728743551</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>259.5898081573978</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_050DBE93B83D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65727156986839,22.63061700998389,0 89.65728703233424,22.63052148722413,0 89.65749173729154,22.63055192394309,0 89.65747445719576,22.63067671492322,0 89.65727156986839,22.63061700998389,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="07E64086553CEC2E0747">
+					<name>Nilima Rani Pal - J1</name>
+					<LookAt>
+						<longitude>89.65802659579559</longitude>
+						<latitude>22.63075687598712</latitude>
+						<altitude>4.168620081128111</altitude>
+						<heading>359.9999737763288</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>188.85292220255</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_050DBE93B83D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65783050110065,22.63052827953623,0 89.65791830646171,22.63053521824238,0 89.65790451323383,22.63075394148951,0 89.65781182975417,22.63074221381171,0 89.65783050110065,22.63052827953623,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="04DF22C54F3CEC2E552E">
+					<name>Jaker Ali - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.65802659579559</longitude>
+						<latitude>22.63075687598712</latitude>
+						<altitude>4.168620081128111</altitude>
+						<heading>359.9999737763288</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>188.85292220255</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65793104640679,22.63053874606449,0 89.65798455411388,22.63054697738513,0 89.65798077064896,22.63076686272118,0 89.65791719290314,22.63075394043159,0 89.65793104640679,22.63053874606449,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="052D61DE063CEC2F1689">
+					<name>Nina Rani Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.65832726393549</longitude>
+						<latitude>22.63077089329437</latitude>
+						<altitude>4.782837171635728</altitude>
+						<heading>359.9999751613426</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>197.6651497783314</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65843280883779,22.63052858047791,0 89.65843917054005,22.63083422003658,0 89.65825392398,22.63081458602241,0 89.65826177279952,22.63053835051899,0 89.65843280883779,22.63052858047791,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0FB5C919D43CEC2FEA51">
+					<name>Tulu Rani Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.6582966281957</longitude>
+						<latitude>22.63076351672554</latitude>
+						<altitude>4.734745510397554</altitude>
+						<heading>359.9999752790348</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>197.713243297003</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65844759398585,22.63052614161111,0 89.65865211412606,22.63052082961282,0 89.65862553160483,22.63086983059845,0 89.65858700690551,22.63085756972874,0 89.65845115241954,22.63083544543365,0 89.65844759398585,22.63052614161111,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="00C3B42BFB3CEC308C7E">
+					<name>Josna Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.65829662821868</longitude>
+						<latitude>22.63076351672553</latitude>
+						<altitude>4.734745510397554</altitude>
+						<heading>359.9999752790348</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>197.7132432970029</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.6586711511063,22.63051440069341,0 89.65883816161417,22.63050930922235,0 89.6588735908954,22.63054866379812,0 89.65887910164275,22.63060369776008,0 89.65880652378146,22.6309238760857,0 89.65863483003332,22.63086859444023,0 89.6586711511063,22.63051440069341,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0503C0E0753CEC498CF0">
+					<name>Josna Pal - J2</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.6625335420561</longitude>
+						<latitude>22.63083886799552</latitude>
+						<altitude>4.946685534740243</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>192.3938915335384</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66268568075142,22.63058982404477,0 89.66284766860487,22.6305832148973,0 89.66282532971012,22.63081902936014,0 89.66270908898238,22.63083346689496,0 89.66268568075142,22.63058982404477,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="008C732E1E3CEC31B46E">
+					<name>Tajmira Begum - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.65975906883075</longitude>
+						<latitude>22.63089504777985</latitude>
+						<altitude>4.271521973438015</altitude>
+						<heading>359.9999817626544</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>178.9599463462218</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65971195795356,22.63107845832815,0 89.65974823048725,22.63067440588136,0 89.66000693232549,22.63067015568669,0 89.66000081463791,22.63108210096782,0 89.65971195795356,22.63107845832815,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0C1C8601FB3CEC325DDC">
+					<name>Mithu Rani Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.65975906883075</longitude>
+						<latitude>22.63089504777985</latitude>
+						<altitude>4.271521973438015</altitude>
+						<heading>359.9999817626544</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>178.9599463462218</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66001889497969,22.63066799526304,0 89.66007779906437,22.63067135261627,0 89.66006539621513,22.6310829870037,0 89.66001040370087,22.63107652683453,0 89.66001889497969,22.63066799526304,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="025B1188753CEC32F0F0">
+					<name>Lipika Rani Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.6601751534042</longitude>
+						<latitude>22.63091607584454</latitude>
+						<altitude>5.414230819727668</altitude>
+						<heading>359.999984344341</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>177.8171979873878</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66009096066497,22.63067017807144,0 89.66014271001023,22.63067263027102,0 89.66012834961082,22.63107835254029,0 89.66007787072225,22.63108180303485,0 89.66009096066497,22.63067017807144,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0F5CC247343CEC46A9C8">
+					<name>Lipika Rani Pal - J2</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.66196516987098</longitude>
+						<latitude>22.63088902317473</latitude>
+						<altitude>5.027282385651821</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>192.3132914317648</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_0F37795DF03D61C9E70E</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66219493535239,22.63049168057286,0 89.66224015824453,22.6304904248418,0 89.66231133327435,22.63048069264558,0 89.66231093150007,22.63072347660788,0 89.66219430800973,22.63072472573557,0 89.66219493535239,22.63049168057286,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="03BCC850303CEC33DBFE">
+					<name>Chaya Rani Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.66035468304773</longitude>
+						<latitude>22.63090729642032</latitude>
+						<altitude>6.335636693638927</altitude>
+						<heading>359.9999848172581</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>176.8958304688385</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66014924957148,22.63067498880941,0 89.6601974492998,22.63067520312232,0 89.66019535153916,22.63107592139955,0 89.66013751889908,22.631077285008,0 89.66014924957148,22.63067498880941,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0CB4B56AF53CEC346178">
+					<name>Neelima Rani Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.66035468304773</longitude>
+						<latitude>22.63090729642032</latitude>
+						<altitude>6.335636693638927</altitude>
+						<heading>359.9999848172581</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>176.8958304688385</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_09C00E9B573D61C9E708</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66020826568568,22.63067300987016,0 89.66026476210767,22.63067103019072,0 89.6602686015451,22.63107006536295,0 89.6602061727707,22.6310692440224,0 89.66020826568568,22.63067300987016,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0A17EE37603CEC35F108">
+					<name>Radha Rani Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.66053369241732</longitude>
+						<latitude>22.6308750471557</latitude>
+						<altitude>6.869883868624287</altitude>
+						<heading>359.9999886676831</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>199.9511795807848</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66028249586493,22.63067139001101,0 89.66040904045036,22.63067182604455,0 89.66042430127908,22.63106389517055,0 89.66028310737357,22.63107070613652,0 89.66028249586493,22.63067139001101,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0E88933BBD3CEC587147">
+					<name>Radha Rani Pal - J2</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.65974416262708</longitude>
+						<latitude>22.63230571807438</latitude>
+						<altitude>6.735044882559467</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>192.739527483991</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65966030923094,22.63195083077683,0 89.65975862057081,22.6320758280374,0 89.65965496318299,22.63243398648239,0 89.65956975295273,22.63242436536194,0 89.65966030923094,22.63195083077683,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0780100BD23CEC3EEF10">
+					<name>Lokhi Rani Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.66129957185754</longitude>
+						<latitude>22.6307938698493</latitude>
+						<altitude>6.178436750783185</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>159.2545947353392</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.6617645220305,22.6309523024354,0 89.66174549266331,22.63087969263714,0 89.66184492024995,22.63087055890526,0 89.66186267375328,22.6309421278438,0 89.6617645220305,22.6309523024354,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="092D755A2F3CEC55CB79">
+					<name>Lipi Rani Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.65943942963028</longitude>
+						<latitude>22.6320364096539</latitude>
+						<altitude>4.762099059877323</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>288.2258248767903</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65963467588303,22.63189494357237,0 89.65956871637039,22.63230445867842,0 89.65945872656458,22.63229377939961,0 89.65952340133015,22.63187328746392,0 89.65963467588303,22.63189494357237,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="01D755FB303CEC413D44">
+					<name>Nita Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.6616412051615</longitude>
+						<latitude>22.63083693479265</latitude>
+						<altitude>5.120519548641777</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>162.537504675056</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66186264585997,22.63087121239506,0 89.66205422513305,22.63084761394976,0 89.66206011012584,22.63091903342805,0 89.66187539953312,22.63093863948272,0 89.66186264585997,22.63087121239506,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0DD35FEC593CEC48E0C0">
+					<name>Nita Pal - J2</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.66253341748497</longitude>
+						<latitude>22.63083891482722</latitude>
+						<altitude>4.94698738251296</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>192.3936018135464</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66249327242511,22.63049637777706,0 89.66265551080453,22.63047881882515,0 89.66269993178584,22.63083707933868,0 89.6625711135965,22.63085147476046,0 89.66249327242511,22.63049637777706,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="06B1A014D43CEC5A743C">
+					<name>Nita Pal - J3</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.66027218932926</longitude>
+						<latitude>22.63250766602047</latitude>
+						<altitude>7.19863811382891</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>163.0119617227502</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66025020978262,22.63250411579179,0 89.66031083720515,22.63232574050265,0 89.66051459311829,22.63238833855264,0 89.66042178756487,22.63257112086903,0 89.66025020978262,22.63250411579179,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="00E18B70A13CEC4B2B9F">
+					<name>Tarun Kumar Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.66280653895727</longitude>
+						<latitude>22.63064019390483</latitude>
+						<altitude>4.077937259628339</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>193.2626574903407</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66297817796428,22.63040754389919,0 89.66307029712148,22.63039855113939,0 89.66304651554691,22.63078525164831,0 89.66295514570734,22.630797211116,0 89.66297817796428,22.63040754389919,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="026C2D38B93CEC4A5F78">
+					<name>Shibu Kumar Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.66280653895727</longitude>
+						<latitude>22.63064019386258</latitude>
+						<altitude>4.077937259628339</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>193.2626574903406</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66283795440317,22.63080606424355,0 89.66286711903744,22.63042843345513,0 89.66296578569153,22.63042190652549,0 89.66293961671016,22.630800045308,0 89.66283795440317,22.63080606424355,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="033DCE1D783CEC5558A4">
+					<name>Rakhal Chandra Pal - J1</name>
+					<visibility>0</visibility>
+					<LookAt>
+						<longitude>89.65943942963028</longitude>
+						<latitude>22.6320364096539</latitude>
+						<altitude>4.762099059877323</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>288.2258248767903</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.65951363932804,22.63186967760782,0 89.65948219885125,22.63204448423435,0 89.65934992998379,22.63199061623296,0 89.65940327378149,22.63183245387575,0 89.65951363932804,22.63186967760782,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+				<Placemark id="0259092C333CEC572C1B">
+					<name>Shukla Rani Pal - J1</name>
+					<LookAt>
+						<longitude>89.65978805626848</longitude>
+						<latitude>22.63242552971039</latitude>
+						<altitude>7.556269214640561</altitude>
+						<heading>0</heading>
+						<tilt>0</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>271.2850857287413</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_31F8A7B5DE3D61C9E70B</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									89.66001084218219,22.63260334849632,0 89.66011161837088,22.6322617832847,0 89.66028950702646,22.63232804521367,0 89.66018642512046,22.63266587759748,0 89.66001084218219,22.63260334849632,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+			</Folder>
+			<Placemark id="03DF53E42A3C662B637C">
+				<name>Julekha Begum F-1</name>
+				<visibility>0</visibility>
+				<LookAt>
+					<longitude>90.18445108285488</longitude>
+					<latitude>21.93409861661776</latitude>
+					<altitude>3.232775490825066</altitude>
+					<heading>30.54049685598169</heading>
+					<tilt>5.009230115888384</tilt>
+					<gx:fovy>34.99993237757757</gx:fovy>
+					<range>80.37868037251428</range>
+					<altitudeMode>absolute</altitudeMode>
+				</LookAt>
+				<styleUrl>#__managed_style_33AD2D4E1D3D61C9E708</styleUrl>
+				<Polygon>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>
+								90.18460672648894,21.93408474451401,0 90.18460252586233,21.9340803151645,0 90.18458799831528,21.93407833674264,0 90.18456474612995,21.9340803463244,0 90.18455734497482,21.9340807865959,0 90.18454292366027,21.93406476711009,0 90.18451460823402,21.93397722466483,0 90.18463575239154,21.93396111153734,0 90.1847465595956,21.93394457938742,0 90.18475890800289,21.93406562878252,0 90.18466721675901,21.93407947131266,0 90.1846102912756,21.93409772821893,0 90.18460672648894,21.93408474451401,0 
+							</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+		</Folder>
+	</Folder>
+</Document>
+</kml>

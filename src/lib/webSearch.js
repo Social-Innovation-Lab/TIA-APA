@@ -1,15 +1,8 @@
 // Web search utility for real-time agricultural information
 export async function searchWeb(query, maxResults = 3) {
   try {
-    // For now, we'll use a simple approach
-    // In production, you could integrate with:
-    // - Google Custom Search API
-    // - Bing Search API
-    // - SerpAPI
-    // - Tavily API
-    
-    // Simulate web search results with relevant agricultural sources
-    const simulatedResults = [
+    // Curated static sources only (no external API)
+    const curated = [
       {
         title: "Bangladesh Rice Research Institute (BRRI)",
         snippet: "Latest research and recommendations for rice cultivation in Bangladesh",
@@ -29,18 +22,14 @@ export async function searchWeb(query, maxResults = 3) {
         relevance: 0.7
       }
     ];
-    
-    // Filter results based on query relevance
-    const relevantResults = simulatedResults
+
+    const queryWords = query.toLowerCase().split(' ');
+    return curated
       .filter(result => {
-        const queryWords = query.toLowerCase().split(' ');
         const contentText = `${result.title} ${result.snippet}`.toLowerCase();
         return queryWords.some(word => contentText.includes(word));
       })
       .slice(0, maxResults);
-    
-    return relevantResults;
-    
   } catch (error) {
     console.error('Web search error:', error);
     return [];

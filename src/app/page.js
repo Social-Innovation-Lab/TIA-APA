@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import LoginModal from '../components/LoginModal';
+import BipodPinModal from '../components/BipodPinModal';
 import Image from 'next/image';
 
 export default function TiaApa() {
@@ -24,6 +25,9 @@ export default function TiaApa() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // Bipod Barta state
+  const [showBipodPinModal, setShowBipodPinModal] = useState(false);
 
   // Check for existing session on component mount
   useEffect(() => {
@@ -217,7 +221,14 @@ export default function TiaApa() {
       const response = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, type: queryType.toLowerCase() })
+        body: JSON.stringify({
+          query,
+          type: queryType.toLowerCase(),
+          // pass recent local chat history (last 8 messages)
+          history: messages.slice(-8).map(m => ({ role: m.role === 'ai' ? 'assistant' : 'user', content: m.content })),
+          userEmail: userData?.email,
+          clinicName: userData?.clinicName
+        })
       });
 
       const data = await response.json();
@@ -415,6 +426,12 @@ export default function TiaApa() {
         onLogin={handleLogin}
       />
 
+      {/* Bipod Barta PIN Modal */}
+      <BipodPinModal
+        isOpen={showBipodPinModal}
+        onClose={() => setShowBipodPinModal(false)}
+      />
+
       {/* Header */}
       <header className="bg-white shadow-sm border-b flex-shrink-0">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
@@ -433,8 +450,20 @@ export default function TiaApa() {
             </div>
           </div>
           
-          {/* User Info and Logout */}
+          {/* User Info, Bipod Barta, and Logout */}
           <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Bipod Barta Button */}
+            <button
+              onClick={() => setShowBipodPinModal(true)}
+              className="px-2 py-1.5 sm:px-3 sm:py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-md hover:from-amber-600 hover:to-orange-600 transition-all text-xs sm:text-sm font-medium flex items-center gap-1"
+              title="বিপদ বার্তা - Early Flood Warning"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span className="hidden sm:inline">বিপদ বার্তা</span>
+            </button>
+
             {isLoggedIn && userData ? (
               <div className="flex items-center space-x-2 sm:space-x-3">
                 <div className="text-right hidden sm:block">

@@ -1,0 +1,72 @@
+Crop,Disease,Symptoms,Probable Solution
+Aus Rice,Brown spot,"Small, dark spots with yellow halos on leaves.","Use fungicides like chlorothalonil, avoid over-irrigation, and remove infected leaves."
+Aus Rice,Blast,"Grayish lesions on leaves, stems, and panicles.","Use resistant varieties, fungicide application, and proper spacing for airflow."
+Aus Rice,Bacterial leaf blight,"Water-soaked lesions on leaves, wilting, and yellowing.","Remove infected plants, use copper-based bactericides, and ensure proper drainage."
+Aus Rice,Sheath blight,"Lesions on leaf sheaths, dark brown lesions near the base.","Apply fungicides like propiconazole, improve drainage, and avoid over-watering."
+Jute,Stem rot,"Soft, water-soaked spots on stems, often with a foul odor.","Improve field drainage, avoid over-watering, and use fungicides like carboxin."
+Jute,Anthracnose,No specific data available for symptoms.,No specific solution available.
+Jute,Root rot,"Discoloration and decay of roots, stunted growth, and yellowing.","Improve drainage, avoid over-watering, and treat with fungicides."
+Jute,Soft rot,No specific data available for symptoms.,No specific solution available.
+Sesame,Leaf spot,"Dark, circular spots with yellow halos on leaves.","Remove infected leaves, use fungicides, and avoid overhead watering."
+Sesame,Alternaria leaf blight,No specific data available for symptoms.,No specific solution available.
+Sesame,Phyllody,No specific data available for symptoms.,No specific solution available.
+Sesame,Bacterial blight,No specific data available for symptoms.,No specific solution available.
+Mung Bean,Yellow mosaic virus,No specific data available for symptoms.,No specific solution available.
+Mung Bean,Leaf spot,"Dark, circular spots with yellow halos on leaves.","Remove infected leaves, use fungicides, and avoid overhead watering."
+Mung Bean,Powdery mildew,"White, powdery fungal growth on leaves and stems.","Apply fungicides like sulfur, remove infected plant parts, and improve air circulation."
+Maize,Leaf blight,No specific data available for symptoms.,No specific solution available.
+Maize,Downy mildew,No specific data available for symptoms.,No specific solution available.
+Maize,Common rust,No specific data available for symptoms.,No specific solution available.
+Maize,Gray leaf spot,No specific data available for symptoms.,No specific solution available.
+Groundnut,Leaf spot,"Dark, circular spots with yellow halos on leaves.","Remove infected leaves, use fungicides, and avoid overhead watering."
+Groundnut,Rust,No specific data available for symptoms.,No specific solution available.
+Groundnut,Collar rot,No specific data available for symptoms.,No specific solution available.
+Groundnut,Aflatoxin contamination,No specific data available for symptoms.,No specific solution available.
+Soybean,Rust,No specific data available for symptoms.,No specific solution available.
+Soybean,Frogeye leaf spot,No specific data available for symptoms.,No specific solution available.
+Soybean,Charcoal rot,No specific data available for symptoms.,No specific solution available.
+Soybean,Bacterial blight,No specific data available for symptoms.,No specific solution available.
+Cotton,Leaf curl virus,No specific data available for symptoms.,No specific solution available.
+Cotton,Wilt,No specific data available for symptoms.,No specific solution available.
+Cotton,Bacterial blight,No specific data available for symptoms.,No specific solution available.
+Cotton,Boll rot,No specific data available for symptoms.,No specific solution available.
+Pigeonpea,Wilt,No specific data available for symptoms.,No specific solution available.
+Pigeonpea,Sterility mosaic disease,No specific data available for symptoms.,No specific solution available.
+Pigeonpea,Phytophthora blight,No specific data available for symptoms.,No specific solution available.
+Pigeonpea,Leaf spot,"Dark, circular spots with yellow halos on leaves.","Remove infected leaves, use fungicides, and avoid overhead watering."
+Cowpea,Mosaic virus,No specific data available for symptoms.,No specific solution available.
+Cowpea,Anthracnose,No specific data available for symptoms.,No specific solution available.
+Cowpea,Root rot,"Discoloration and decay of roots, stunted growth, and yellowing.","Improve drainage, avoid over-watering, and treat with fungicides."
+Cowpea,Leaf blight,No specific data available for symptoms.,No specific solution available.
+Sunflower,Alternaria leaf blight,No specific data available for symptoms.,No specific solution available.
+Sunflower,Downy mildew,No specific data available for symptoms.,No specific solution available.
+Sunflower,Rust,No specific data available for symptoms.,No specific solution available.
+Sunflower,Head rot,No specific data available for symptoms.,No specific solution available.
+Chickpea,Wilt,No specific data available for symptoms.,No specific solution available.
+Chickpea,Blight,No specific data available for symptoms.,No specific solution available.
+Chickpea,Ascochyta blight,No specific data available for symptoms.,No specific solution available.
+Chickpea,Root rot,"Discoloration and decay of roots, stunted growth, and yellowing.","Improve drainage, avoid over-watering, and treat with fungicides."
+Sweet Gourd,Powdery mildew,"White, powdery fungal growth on leaves and stems.","Apply fungicides like sulfur, remove infected plant parts, and improve air circulation."
+Sweet Gourd,Downy mildew,No specific data available for symptoms.,No specific solution available.
+Sweet Gourd,Mosaic virus,No specific data available for symptoms.,No specific solution available.
+Sweet Gourd,Anthracnose,No specific data available for symptoms.,No specific solution available.
+Long Yard Bean,Leaf spot,"Dark, circular spots with yellow halos on leaves.","Remove infected leaves, use fungicides, and avoid overhead watering."
+Long Yard Bean,Anthracnose,No specific data available for symptoms.,No specific solution available.
+Long Yard Bean,Mosaic virus,No specific data available for symptoms.,No specific solution available.
+Long Yard Bean,Powdery mildew,"White, powdery fungal growth on leaves and stems.","Apply fungicides like sulfur, remove infected plant parts, and improve air circulation."
+Teasel Gourd,Anthracnose,No specific data available for symptoms.,No specific solution available.
+Teasel Gourd,Powdery mildew,"White, powdery fungal growth on leaves and stems.","Apply fungicides like sulfur, remove infected plant parts, and improve air circulation."
+Teasel Gourd,Fruit rot,No specific data available for symptoms.,No specific solution available.
+Teasel Gourd,Wilt,No specific data available for symptoms.,No specific solution available.
+Amaranth,Leaf spot,"Dark, circular spots with yellow halos on leaves.","Remove infected leaves, use fungicides, and avoid overhead watering."
+Amaranth,Downy mildew,No specific data available for symptoms.,No specific solution available.
+Amaranth,Damping-off,No specific data available for symptoms.,No specific solution available.
+Amaranth,Cercospora leaf spot,No specific data available for symptoms.,No specific solution available.
+Indian Spinach,Leaf spot,"Dark, circular spots with yellow halos on leaves.","Remove infected leaves, use fungicides, and avoid overhead watering."
+Indian Spinach,Anthracnose,No specific data available for symptoms.,No specific solution available.
+Indian Spinach,Wilt,No specific data available for symptoms.,No specific solution available.
+Indian Spinach,Mosaic virus,No specific data available for symptoms.,No specific solution available.
+Green Gram,Yellow mosaic virus,No specific data available for symptoms.,No specific solution available.
+Green Gram,Leaf spot,"Dark, circular spots with yellow halos on leaves.","Remove infected leaves, use fungicides, and avoid overhead watering."
+Green Gram,Powdery mildew,"White, powdery fungal growth on leaves and stems.","Apply fungicides like sulfur, remove infected plant parts, and improve air circulation."
+Green Gram,Anthracnose,No specific data available for symptoms.,No specific solution available.

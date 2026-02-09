@@ -4,6 +4,8 @@ import Papa from 'papaparse';
 import fs from 'fs';
 import path from 'path';
 import { retrieveRelevantKnowledge, createRAGPrompt, enhancedRAGSearch } from '../../../lib/rag';
+import { searchClinicAdvice } from '../../../lib/clinicData';
+import { getRecentQueriesByUser } from '../../../lib/db';
 
 // Initialize AI client based on available API keys
 function initializeAIClient() {
@@ -70,8 +72,8 @@ async function loadAndFormatCSVData() {
   return formattedData;
 }
 
-// Enhanced RAG-based search
-async function ragBasedSearch(query, userLocation = 'Bangladesh') {
+// Enhanced RAG-based search with optional conversation history
+async function ragBasedSearch(query, userLocation = 'Bangladesh', historyMessages = []) {
   try {
     console.log('🔍 Starting enhanced RAG-based search for:', query);
     
@@ -81,25 +83,38 @@ async function ragBasedSearch(query, userLocation = 'Bangladesh') {
     
     // Step 2: Load CSV data for additional context
     const csvData = await loadAndFormatCSVData();
+
+    // Step 2b: Retrieve clinic advice pairs (top matches)
+    const clinicTop = searchClinicAdvice(query, 5);
+    const clinicContext = clinicTop.length > 0
+      ? clinicTop.map((p, i) => `Clinic Pair ${i+1}:\nProblem: ${p.problem}\nAdvice: ${p.solution}`).join('\n\n')
+      : '';
     
-    // Step 3: Create final prompt combining RAG and CSV data
-    const finalPrompt = csvData ? 
-      `${ragResults.prompt}\n\nADDITIONAL REFERENCE DATA:\n${csvData.substring(0, 1500)}...` : 
-      ragResults.prompt;
+    // Step 3: Create final prompt combining RAG + CSV + clinic pairs
+    let finalPrompt = ragResults.prompt;
+    if (clinicContext) {
+      finalPrompt += `\n\nCLINIC EXPERIENCE (PROBLEMS → ADVICE):\n${clinicContext}`;
+    }
+    if (csvData) {
+      finalPrompt += `\n\nADDITIONAL REFERENCE DATA:\n${csvData.substring(0, 1500)}...`;
+    }
     
-    // Step 4: Get AI response with enhanced context
+    // Step 4: Get AI response with enhanced context + history
+    const messages = [
+      {
+        role: "system",
+        content: finalPrompt
+      },
+      ...historyMessages,
+      {
+        role: "user",
+        content: query
+      }
+    ];
+
     const completion = await aiConfig.client.chat.completions.create({
       model: aiConfig.model,
-      messages: [
-        {
-          role: "system",
-          content: finalPrompt
-        },
-        {
-          role: "user", 
-          content: query
-        }
-      ],
+      messages,
       max_tokens: 1200,
       temperature: 0.3
     });
@@ -114,6 +129,7 @@ async function ragBasedSearch(query, userLocation = 'Bangladesh') {
         localSources: ragResults.localCount,
         webSources: ragResults.webCount,
         csvData: csvData ? true : false,
+        clinicPairs: clinicTop.length,
         enhanced: true
       }
     };
@@ -175,8 +191,8 @@ Always provide practical, specific advice without mentioning data sources.`,
   }
 }
 
-// Search using AI Assistant
-async function searchWithAssistant(query, csvData) {
+// Search using AI Assistant (include history as plain text context)
+async function searchWithAssistant(query, csvData, historyText = '') {
   try {
     const assistant = await getOrCreateAssistant();
     
@@ -186,7 +202,7 @@ async function searchWithAssistant(query, csvData) {
     // Add the CSV data and user query to the thread
     await aiConfig.client.beta.threads.messages.create(thread.id, {
       role: 'user',
-      content: `Here is some agricultural reference information:\n\n${csvData}\n\nUser Query: "${query}"\n\nPlease provide the most relevant and accurate answer to the user's query. If you find matching information, use it. If not, provide general agricultural advice based on your knowledge. Respond in a helpful, practical manner suitable for Bangladeshi farmers. Do NOT mention any database, file, or entry in your answer.`
+      content: `Here is some agricultural reference information:\n\n${csvData}\n\nConversation so far (may be empty):\n${historyText}\n\nUser Query: "${query}"\n\nPlease provide the most relevant and accurate answer to the user's query. If you find matching information, use it. If not, provide general agricultural advice based on your knowledge. Respond in a helpful, practical manner suitable for Bangladeshi farmers. Do NOT mention any database, file, or entry in your answer.`
     });
     
     // Run the assistant
@@ -221,24 +237,27 @@ async function searchWithAssistant(query, csvData) {
 }
 
 // Fallback search using direct GPT-4o
-async function fallbackSearch(query) {
+async function fallbackSearch(query, historyMessages = []) {
   try {
-    const completion = await aiConfig.client.chat.completions.create({
-      model: aiConfig.model,
-      messages: [
-        {
-          role: "system",
-          content: `You are Tia Apa (টিয়া আপা), a helpful AI assistant for Bangladeshi farmers. 
+    const messages = [
+      {
+        role: "system",
+        content: `You are Tia Apa (টিয়া আপা), a helpful AI assistant for Bangladeshi farmers. 
           Provide practical, accurate agricultural advice in the user's language (Bangla or English).
           Focus on solutions that are practical for Bangladeshi farming conditions.
           Be specific and actionable in your recommendations.`
-        },
-        {
-          role: "user",
-          content: `Please provide detailed agricultural advice for this query: "${query}". 
+      },
+      ...historyMessages,
+      {
+        role: "user",
+        content: `Please provide detailed agricultural advice for this query: "${query}". 
           Include specific steps, treatments, and recommendations suitable for Bangladeshi farmers.`
-        }
-      ],
+      }
+    ];
+
+    const completion = await aiConfig.client.chat.completions.create({
+      model: aiConfig.model,
+      messages,
       max_tokens: 800,
       temperature: 0.3
     });
@@ -252,7 +271,7 @@ async function fallbackSearch(query) {
 
 export async function POST(request) {
   try {
-    const { query, type = 'text', userLocation = 'Bangladesh' } = await request.json();
+    const { query, type = 'text', userLocation = 'Bangladesh', history = [], userEmail, clinicName } = await request.json();
     
     if (!query || !query.trim()) {
       return NextResponse.json({ error: 'Query is required' }, { status: 400 });
@@ -262,10 +281,30 @@ export async function POST(request) {
     let source = 'rag';
     let metadata = {};
     
+    // Build conversation history messages (limit to last 10 turns)
+    let historyMessages = [];
+    try {
+      if (Array.isArray(history) && history.length > 0) {
+        historyMessages = history
+          .slice(-10)
+          .map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: (m.content || '').toString().slice(0, 1200) }));
+      } else if (userEmail && clinicName) {
+        const rows = await getRecentQueriesByUser(userEmail, clinicName, 10);
+        rows.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        for (const r of rows) {
+          if (r.query) historyMessages.push({ role: 'user', content: (r.query || '').slice(0, 800) });
+          if (r.answer) historyMessages.push({ role: 'assistant', content: (r.answer || '').slice(0, 1200) });
+        }
+      }
+    } catch (memErr) {
+      console.log('Conversation memory build failed:', memErr);
+      historyMessages = [];
+    }
+    
     try {
       // Primary: Use enhanced RAG-based search for maximum accuracy
       console.log('🚀 Using enhanced RAG-based search as primary method');
-      const ragResult = await ragBasedSearch(query, userLocation);
+      const ragResult = await ragBasedSearch(query, userLocation, historyMessages);
       response = ragResult.response;
       metadata = ragResult.metadata;
       source = 'enhanced_rag';
@@ -276,7 +315,8 @@ export async function POST(request) {
       try {
         // Fallback 1: Use AI Assistant with CSV data
         const csvData = await loadAndFormatCSVData();
-        response = await searchWithAssistant(query, csvData);
+        const historyText = historyMessages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
+        response = await searchWithAssistant(query, csvData, historyText);
         source = 'assistant_csv';
         metadata = { csvData: true, enhanced: false };
         
@@ -284,7 +324,7 @@ export async function POST(request) {
         console.error('Assistant API error, using final fallback:', assistantError);
         
         // Fallback 2: Direct GPT-4o
-        response = await fallbackSearch(query);
+        response = await fallbackSearch(query, historyMessages);
         source = 'gpt4o_fallback';
         metadata = { enhanced: false };
       }

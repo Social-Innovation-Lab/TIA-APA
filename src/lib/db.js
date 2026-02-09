@@ -95,3 +95,22 @@ export async function getQueryStats() {
     throw error;
   }
 } 
+
+// Fetch recent Q/A pairs for a specific user and clinic for conversational memory
+export async function getRecentQueriesByUser(userContact, clinicName, limit = 10) {
+  const selectText = `
+    SELECT query, answer, created_at
+    FROM queries
+    WHERE user_contact = $1 AND clinic_name = $2
+    ORDER BY created_at DESC
+    LIMIT $3
+  `;
+
+  try {
+    const result = await query(selectText, [userContact, clinicName, limit]);
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching user conversation:', error);
+    return [];
+  }
+}
